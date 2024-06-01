@@ -1,3 +1,7 @@
+// TODO: use rust crate from 'deno_config'
+
+import * as JSONC from "@std/jsonc";
+
 export interface ImportMap {
   imports?: Record<string, string>;
   scopes?: Record<string, Record<string, string>>;
@@ -7,6 +11,28 @@ export interface DenoConfig extends ImportMap {
   importMap?: string;
   nodeModulesDir?: boolean;
   compilerOptions?: CompilerOptions;
+}
+
+export async function readDenoConfig(url: URL): Promise<DenoConfig> {
+  const denoConfigText = await Deno.readTextFile(url);
+  const config = JSONC.parse(denoConfigText);
+
+  assertDenoConfig(config);
+
+  return config;
+}
+
+export function assertDenoConfig(
+  input: unknown,
+): asserts input is DenoConfig {
+  if (!validateDenoConfig(input)) {
+    throw new Error();
+  }
+}
+
+export function validateDenoConfig(input: unknown): input is DenoConfig {
+  // TODO
+  return true;
 }
 
 export interface CompilerOptions {
