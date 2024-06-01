@@ -1,13 +1,13 @@
-import { denoSpecifier } from "@miyauci/esbuild-deno-specifier";
+import { denoSpecifierPlugin } from "@miyauci/esbuild-deno-specifier";
 import { type Plugin } from "esbuild";
 import {
   importMapPlugin,
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
-import { resolve, toFileUrl } from "@std/path";
+import { resolve } from "@std/path/resolve";
+import { toFileUrl } from "@std/path/to-file-url";
+import { type ImportMap, readDenoConfig } from "@deno/deno-config";
 import { embedImportMaps } from "./import_map.ts";
-import type { ImportMap } from "./types.ts";
-import { readDenoConfig } from "./deno_config.ts";
 
 export type Path = string;
 
@@ -42,7 +42,7 @@ export function denoPlugin(options: DenoPluginOptions): Plugin {
         nodeModulesDir: config.nodeModulesDir,
         denoDir: options.denoDir,
       };
-      await denoSpecifier(denoSpecifierPluginOptions).setup(build);
+      await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
     },
   };
 }
