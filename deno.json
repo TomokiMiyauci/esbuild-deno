@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "build-wasm": "deno run -A jsr:@deno/wasmbuild@^0.17.1 --out src/deno_config/js"
+  },
+  "imports": {
+    "@deno/deno-config": "./src/deno_config/js/mod.ts",
+    "@miyauci/esbuild-deno-specifier": "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.8",
+    "@miyauci/esbuild-import-map": "jsr:@miyauci/esbuild-import-map@1.0.0-beta.2",
+    "@std/expect": "jsr:@std/expect@^0.224.3",
+    "@std/jsonc": "jsr:@std/jsonc@^0.224.0",
+    "@std/path": "jsr:@std/path@^0.225.1",
+    "@std/testing": "jsr:@std/testing@^0.224.0",
+    "esbuild": "npm:esbuild@^0.21.4"
+  }
+}
