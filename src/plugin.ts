@@ -9,8 +9,13 @@ import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { resolveURL } from "./utils.ts";
 
+export type PartialDenoConfig = Pick<
+  DenoConfig,
+  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir"
+>;
+
 export interface DenoConfigOptions {
-  value?: DenoConfig;
+  value?: PartialDenoConfig;
   location: URL | string;
 }
 
@@ -18,6 +23,10 @@ export interface DenoPluginOptions {
   /** Deno config options. */
   config: DenoConfigOptions;
 
+  /** Path to deno dir.
+   *
+   * @default DENO_DIR
+   */
   denoDir?: string;
 }
 

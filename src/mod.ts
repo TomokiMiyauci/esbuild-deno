@@ -1,2 +1,7 @@
-export { denoPlugin, type DenoPluginOptions } from "./plugin.ts";
+export {
+  type DenoConfigOptions,
+  denoPlugin,
+  type DenoPluginOptions,
+  type PartialDenoConfig,
+} from "./plugin.ts";
 export { type Plugin } from "esbuild";
