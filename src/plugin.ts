@@ -8,10 +8,11 @@ import { type DenoConfig, fetchDenoConfig } from "@deno/deno-config";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { resolveURL } from "./utils.ts";
+import { resolveImportMap } from "./deno_config.ts";
 
 export type PartialDenoConfig = Pick<
   DenoConfig,
-  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir"
+  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir" | "importMap"
 >;
 
 export interface DenoConfigOptions {
@@ -41,14 +42,17 @@ export function denoPlugin(options: DenoPluginOptions): Plugin {
 
       await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
 
-      const _importMap = { imports: config.imports, scopes: config.scopes };
-      const importMap = embedImportMaps(_importMap);
+      const resolvedImportMap = await resolveImportMap(config, configURL);
 
-      const importMapPluginArgs = {
-        baseURL: configURL,
-        importMap,
-      } satisfies ImportMapPluginArgs;
-      await importMapPlugin(importMapPluginArgs).setup(build);
+      if (resolvedImportMap) {
+        const importMap = embedImportMaps(resolvedImportMap.importMap);
+        const importMapPluginArgs = {
+          baseURL: resolvedImportMap.baseURL,
+          importMap,
+        } satisfies ImportMapPluginArgs;
+
+        await importMapPlugin(importMapPluginArgs).setup(build);
+      }
 
       const denoSpecifierPluginOptions = {
         nodeModulesDir: config.nodeModulesDir,
