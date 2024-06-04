@@ -1,6 +1,8 @@
 import type { Plugin, TsconfigRaw } from "esbuild";
-import type { CompilerOptions } from "@deno/deno-config";
+import type { DenoConfig } from "@deno/deno-config";
 import { mergeTsConfigRawPlugin } from "./tsconfig_raw.ts";
+
+export type CompilerOptions = Exclude<DenoConfig["compilerOptions"], undefined>;
 
 export type EsbuildCompilerOptions = Exclude<
   TsconfigRaw["compilerOptions"],

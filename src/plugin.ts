@@ -6,7 +6,7 @@ import {
 } from "@miyauci/esbuild-import-map";
 import { resolve } from "@std/path/resolve";
 import { toFileUrl } from "@std/path/to-file-url";
-import { type ImportMap, readDenoConfig } from "@deno/deno-config";
+import { readDenoConfig } from "@deno/deno-config";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 
@@ -29,10 +29,7 @@ export function denoPlugin(options: DenoPluginOptions): Plugin {
 
       await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
 
-      const _importMap = {
-        imports: config.imports,
-        scopes: config.scopes,
-      } satisfies ImportMap;
+      const _importMap = { imports: config.imports, scopes: config.scopes };
       const importMap = embedImportMaps(_importMap);
 
       const importMapPluginArgs = {
