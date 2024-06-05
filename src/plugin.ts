@@ -26,34 +26,38 @@ export interface DenoPluginOptions {
   denoDir?: string;
 }
 
-export function denoPlugin(options: DenoPluginOptions): Plugin {
+export function denoPlugin(options?: DenoPluginOptions): Plugin {
   return {
     name: "deno",
     async setup(build) {
-      const configURL = resolveURL(options.config.location);
-      const config = options.config.value
-        ? options.config.value
-        : await fetchDenoConfig(configURL);
+      if (options) {
+        const configURL = resolveURL(options.config.location);
+        const config = options.config.value
+          ? options.config.value
+          : await fetchDenoConfig(configURL);
 
-      await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
+        await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
 
-      const resolvedImportMap = await resolveImportMap(config, configURL);
+        const resolvedImportMap = await resolveImportMap(config, configURL);
 
-      if (resolvedImportMap) {
-        const importMap = embedImportMaps(resolvedImportMap.importMap);
-        const importMapPluginArgs = {
-          baseURL: resolvedImportMap.baseURL,
-          importMap,
-        } satisfies ImportMapPluginArgs;
+        if (resolvedImportMap) {
+          const importMap = embedImportMaps(resolvedImportMap.importMap);
+          const importMapPluginArgs = {
+            baseURL: resolvedImportMap.baseURL,
+            importMap,
+          } satisfies ImportMapPluginArgs;
 
-        await importMapPlugin(importMapPluginArgs).setup(build);
+          await importMapPlugin(importMapPluginArgs).setup(build);
+        }
+
+        const denoSpecifierPluginOptions = {
+          nodeModulesDir: config.nodeModulesDir,
+          denoDir: options?.denoDir,
+        };
+        await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
+      } else {
+        await denoSpecifierPlugin().setup(build);
       }
-
-      const denoSpecifierPluginOptions = {
-        nodeModulesDir: config.nodeModulesDir,
-        denoDir: options.denoDir,
-      };
-      await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
     },
   };
 }
