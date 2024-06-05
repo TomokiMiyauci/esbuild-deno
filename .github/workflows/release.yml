@@ -1,0 +1,74 @@
+name: release
+
+on:
+  push:
+    branches:
+      - beta
+      - main
+
+jobs:
+  lint:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        deno: [v1.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Lint
+        run: |
+          deno fmt --check
+          deno lint
+
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        deno: [v1.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Test
+        run: deno task test --coverage=coverage
+
+      - name: Generate coverage
+        run: deno coverage coverage --output=cov_profile.lcov --lcov
+
+      - uses: codecov/codecov-action@v4
+        with:
+          files: cov_profile.lcov
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  release:
+    needs: [lint, test]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

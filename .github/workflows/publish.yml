@@ -1,0 +1,36 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        deno: [v1.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Modify deno config
+        uses: maxgfr/github-change-json@main
+        with:
+          key: version
+          value: ${{ github.event.release.tag_name }}
+          path: ./deno.json
+
+      - name: publish
+        # --allow-dirty is required because the uncommit file exists because the jsr config was changed in the previous job.
+        run: deno publish --allow-dirty
