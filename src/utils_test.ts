@@ -3,6 +3,8 @@ import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { resolve, toFileUrl } from "@std/path";
 
+const cwd = Deno.cwd();
+
 describe("resolveURL", () => {
   it("should return same", () => {
     const table: URL[] = [
@@ -11,7 +13,7 @@ describe("resolveURL", () => {
     ];
 
     table.forEach((url) => {
-      expect(resolveURL(url)).toBe(url);
+      expect(resolveURL(url, cwd)).toBe(url);
     });
   });
 
@@ -25,7 +27,7 @@ describe("resolveURL", () => {
     ];
 
     table.forEach(([url, expected]) => {
-      expect(resolveURL(url)).toEqual(new URL(expected));
+      expect(resolveURL(url, cwd)).toEqual(new URL(expected));
     });
   });
 });

@@ -1,4 +1,7 @@
-import { denoSpecifierPlugin } from "@miyauci/esbuild-deno-specifier";
+import {
+  denoSpecifierPlugin,
+  type DenoSpecifierPluginOptions,
+} from "@miyauci/esbuild-deno-specifier";
 import { type Plugin } from "esbuild";
 import {
   importMapPlugin,
@@ -54,10 +57,16 @@ export function denoPlugin(
   return {
     name: "deno",
     async setup(build) {
-      const configURL = resolveURL(location);
+      const cwd = build.initialOptions.absWorkingDir || Deno.cwd();
+      const configURL = resolveURL(location, cwd);
+
       const config = options?.config
         ? options.config
-        : await fetchDenoConfig(configURL);
+        : await fetchDenoConfig(configURL).catch((e) => {
+          const message = `Fail to fetch deno config from '${configURL}'`;
+
+          throw new Error(message, { cause: e });
+        });
 
       await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
 
@@ -74,9 +83,9 @@ export function denoPlugin(
       }
 
       const denoSpecifierPluginOptions = {
-        nodeModulesDir: config.nodeModulesDir,
+        nodeModulesDir: config?.nodeModulesDir,
         denoDir: options?.denoDir,
-      };
+      } satisfies DenoSpecifierPluginOptions;
       await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
     },
   };

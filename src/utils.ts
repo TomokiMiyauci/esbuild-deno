@@ -9,7 +9,7 @@ import { resolve } from "@std/path/resolve";
  */
 export function resolveURL(
   url: URL | string,
-  baseDir: string = Deno.cwd(),
+  baseDir: string,
 ): URL {
   if (typeof url !== "string") return url;
 
