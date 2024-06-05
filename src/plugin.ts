@@ -11,7 +11,17 @@ import { resolveURL } from "./utils.ts";
 import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
 
 export interface DenoConfigOptions {
+  /** Deno config as JavaScript value.
+   */
   value?: DenoConfig;
+
+  /** Location of config.
+   *
+   * If it is an absolute path, it is converted to a file URL.
+   * If it is a relative path, it is resolved based on the current directory and converted to a file URL.
+   *
+   * If {@link value} is not specified, deno config is fetched using this.
+   */
   location: URL | string;
 }
 
@@ -26,6 +36,23 @@ export interface DenoPluginOptions {
   denoDir?: string;
 }
 
+/** Create esbuild plugin for deno.
+ *
+ * @example
+ * ```ts
+ * import { denoPlugin } from "@miyauci/esbuild-deno";
+ * import { build } from "esbuild";
+ *
+ * await build({
+ *  stdin: {
+ *    contents: `import "jsr:@std/assert";`,
+ *  },
+ *  format: "esm",
+ *  bundle: true,
+ *  plugins: [denoPlugin({ config: { location: "path/to/deno.json" } })],
+ * });
+ * ```
+ */
 export function denoPlugin(options?: DenoPluginOptions): Plugin {
   return {
     name: "deno",
