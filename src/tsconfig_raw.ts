@@ -27,7 +27,7 @@ export function parseTsConfigRaw(input: string): TsconfigRaw {
   try {
     result = JSON.parse(input);
   } catch (e) {
-    throw new Error("'tsConfigRaw' is invalid JSON format", { cause: e });
+    throw new Error("'tsconfigRaw' is invalid JSON format", { cause: e });
   }
 
   assertTsConfigRaw(result);
@@ -38,7 +38,7 @@ export function parseTsConfigRaw(input: string): TsconfigRaw {
 export function assertTsConfigRaw(
   input: unknown,
 ): asserts input is TsconfigRaw {
-  assertType(input, "object", "tsConfigRaw");
+  assertType(input, "object", "tsconfigRaw");
 
   if ("compilerOptions" in input) {
     assertCompilerOptions(input.compilerOptions);
@@ -48,7 +48,7 @@ export function assertTsConfigRaw(
 export function assertCompilerOptions(
   input: unknown,
 ): asserts input is TsconfigRaw["compilerOptions"] {
-  assertType(input, "object", "tsConfigRaw.compilerOptions");
+  assertType(input, "object", "tsconfigRaw.compilerOptions");
   assertCompilerOptionsType(input);
   assertCompilerOptionsListValue(input);
 
@@ -76,7 +76,7 @@ export function assertCompilerOptionsType(
 ): asserts input {
   for (const [key, type] of Object.entries(typeMap)) {
     if (key in input) {
-      assertType(input[key], type, `tsConfigRaw.compilerOptions.${key}`);
+      assertType(input[key], type, `tsconfigRaw.compilerOptions.${key}`);
     }
   }
 }
@@ -86,7 +86,7 @@ export function assertCompilerOptionsListValue(
 ): asserts input {
   Object.entries(listMap).forEach(([key, list]) => {
     if (key in input) {
-      assertOneOf(input[key], list, `tsConfigRaw.compilerOptions.${key}`);
+      assertOneOf(input[key], list, `tsconfigRaw.compilerOptions.${key}`);
     }
   });
 }
@@ -94,16 +94,16 @@ export function assertCompilerOptionsListValue(
 export function assertPaths(
   input: unknown,
 ): asserts input is Record<string, string[]> {
-  assertType(input, "object", "tsConfigRaw.compilerOptions.paths");
+  assertType(input, "object", "tsconfigRaw.compilerOptions.paths");
 
   for (const [key, value] of Object.entries(input)) {
-    assertType(value, "array", `tsConfigRaw.compilerOptions.paths.${key}`);
+    assertType(value, "array", `tsconfigRaw.compilerOptions.paths.${key}`);
 
     for (const [index, item] of Object.entries(value)) {
       assertType(
         item,
         "string",
-        `tsConfigRaw.compilerOptions.paths.${key}.${index}`,
+        `tsconfigRaw.compilerOptions.paths.${key}.${index}`,
       );
     }
   }
