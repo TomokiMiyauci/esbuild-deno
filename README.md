@@ -47,7 +47,7 @@ await build({
   },
   format: "esm",
   bundle: true,
-  plugins: [denoPlugin({ config: { location: "path/to/deno.json" } })],
+  plugins: [denoPlugin("path/to/deno.json")],
 });
 ```
 
@@ -62,7 +62,7 @@ import { type DenoConfig, denoPlugin } from "@miyauci/esbuild-deno";
 import { build } from "esbuild";
 
 declare const location: URL | string;
-const denoConfig = {
+const config = {
   compilerOptions: {
     jsx: "react-jsx",
   },
@@ -80,7 +80,7 @@ await build({
   format: "esm",
   bundle: true,
   plugins: [
-    denoPlugin({ config: { value: denoConfig, location } }),
+    denoPlugin(location, { config }),
   ],
 });
 ```
@@ -101,10 +101,11 @@ should be added first.
 import { denoPlugin } from "@miyauci/esbuild-deno";
 import { build, type Plugin } from "esbuild";
 
+declare const location: URL | string;
 declare const tsConfigRawDependantPlugin: Plugin;
 
 await build({
-  plugins: [denoPlugin(), tsConfigRawDependantPlugin],
+  plugins: [denoPlugin(location), tsConfigRawDependantPlugin],
 });
 ```
 
