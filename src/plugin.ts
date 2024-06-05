@@ -4,19 +4,14 @@ import {
   importMapPlugin,
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
-import { type DenoConfig, fetchDenoConfig } from "@deno/deno-config";
+import { fetchDenoConfig } from "@deno/deno-config";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { resolveURL } from "./utils.ts";
-import { resolveImportMap } from "./deno_config.ts";
-
-export type PartialDenoConfig = Pick<
-  DenoConfig,
-  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir" | "importMap"
->;
+import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
 
 export interface DenoConfigOptions {
-  value?: PartialDenoConfig;
+  value?: DenoConfig;
   location: URL | string;
 }
 

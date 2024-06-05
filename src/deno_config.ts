@@ -1,6 +1,11 @@
-import { type DenoConfig } from "@deno/deno-config";
+import { type DenoConfig as _DenoConfig } from "@deno/deno-config";
 import { dirname } from "@std/url";
 import { resolveURL } from "./utils.ts";
+
+export type DenoConfig = Pick<
+  _DenoConfig,
+  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir" | "importMap"
+>;
 
 export type ImportMap = Pick<DenoConfig, "imports" | "scopes">;
 
