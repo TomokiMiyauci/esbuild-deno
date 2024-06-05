@@ -1,3 +1,12 @@
+# [1.0.0-beta.2](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.1...1.0.0-beta.2) (2024-06-05)
+
+
+### Features
+
+* **plugin:** change plugin factory interface ([fb630ab](https://github.com/TomokiMiyauci/esbuild-deno/commit/fb630ab112912b368bb1c07fee2a3dd54bbd69a3))
+* **plugin:** use absWorkingDir if specified ([d13f383](https://github.com/TomokiMiyauci/esbuild-deno/commit/d13f383545611bf22acfaeb27e5ee8018f7addd4))
+* update deps version ([20ac761](https://github.com/TomokiMiyauci/esbuild-deno/commit/20ac761652212648f6cbdedc32c6c58f8f07bc40))
+
 # 1.0.0-beta.1 (2024-06-05)
 
 
