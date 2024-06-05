@@ -1,4 +1,5 @@
 {
+  "name": "@miyauci/esbuild-deno",
   "tasks": {
     "test": "deno test --allow-read --doc",
     "build-wasm": "deno run -A jsr:@deno/wasmbuild@^0.17.1 --out src/deno_config/js"
@@ -17,5 +18,6 @@
     "json-schema-to-typescript": "npm:json-schema-to-typescript@^14.0.5",
     "@miyauci/esbuild-deno": "./src/mod.ts"
   },
-  "exclude": ["target"]
+  "exports": "./src/mod.ts",
+  "exclude": ["target", "CHANGELOG.md"]
 }
