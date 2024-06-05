@@ -24,6 +24,7 @@ describe("resolveURL", () => {
       ["../main.ts", toFileUrl(resolve("../main.ts"))],
       ["/", "file:///"],
       ["/a/b", "file:///a/b"],
+      ["file:///", "file:///"],
     ];
 
     table.forEach(([url, expected]) => {
