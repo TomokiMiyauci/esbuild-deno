@@ -8,14 +8,12 @@ import {
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
 import { readDenoConfig } from "@deno/deno-config";
-import { format } from "@miyauci/format";
 import { dirname } from "@std/path/dirname";
 import { toFileUrl } from "@std/path/to-file-url";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { resolveLock, resolvePath } from "./utils.ts";
 import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
-import { Message } from "./constants.ts";
 
 export interface DenoPluginOptions {
   /** Deno config as JavaScript value. */
