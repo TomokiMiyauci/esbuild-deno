@@ -1,4 +1,6 @@
 import { type Plugin, TsconfigRaw } from "esbuild";
+import { format } from "@miyauci/format";
+import { Field, Message } from "./constants.ts";
 
 export function mergeTsconfigRawPlugin(
   tsconfigRaw: TsconfigRaw,
@@ -27,7 +29,9 @@ export function parseTsconfigRaw(input: string): TsconfigRaw {
   try {
     result = JSON.parse(input);
   } catch (e) {
-    throw new Error("'tsconfigRaw' is invalid JSON format", { cause: e });
+    const message = format(Message.InvalidJson, { name: Field.TsconfigRaw });
+
+    throw new Error(message, { cause: e });
   }
 
   assertTsconfigRaw(result);
@@ -38,21 +42,25 @@ export function parseTsconfigRaw(input: string): TsconfigRaw {
 export function assertTsconfigRaw(
   input: unknown,
 ): asserts input is TsconfigRaw {
-  assertType(input, "object", "tsconfigRaw");
+  assertType(input, "object", Field.TsconfigRaw);
 
-  if ("compilerOptions" in input) {
+  if (Field.CompilerOptions in input) {
     assertCompilerOptions(input.compilerOptions);
   }
+}
+
+function dotted(...input: string[]): string {
+  return input.join(".");
 }
 
 export function assertCompilerOptions(
   input: unknown,
 ): asserts input is TsconfigRaw["compilerOptions"] {
-  assertType(input, "object", "tsconfigRaw.compilerOptions");
+  assertType(input, "object", dotted(Field.TsconfigRaw, Field.CompilerOptions));
   assertCompilerOptionsType(input);
   assertCompilerOptionsListValue(input);
 
-  if ("paths" in input) assertPaths(input.paths);
+  if (Field.Paths in input) assertPaths(input.paths);
 }
 
 function assertType<T extends keyof TypeMap>(
@@ -60,14 +68,16 @@ function assertType<T extends keyof TypeMap>(
   expected: T,
   name: string,
 ): asserts input is TypeMap[T] {
-  const type = input === null
+  const actual = input === null
     ? "null"
     : Array.isArray(input)
     ? "array"
     : typeof input;
 
-  if (type !== expected) {
-    throw new Error(`'${name}' should be ${expected} but ${type}`);
+  if (actual !== expected) {
+    const message = format(Message.Invalid, { name, expected, actual });
+
+    throw new Error(message);
   }
 }
 
@@ -76,7 +86,11 @@ export function assertCompilerOptionsType(
 ): asserts input {
   for (const [key, type] of Object.entries(typeMap)) {
     if (key in input) {
-      assertType(input[key], type, `tsconfigRaw.compilerOptions.${key}`);
+      assertType(
+        input[key],
+        type,
+        dotted(Field.TsconfigRaw, Field.CompilerOptions, key),
+      );
     }
   }
 }
@@ -86,7 +100,11 @@ export function assertCompilerOptionsListValue(
 ): asserts input {
   Object.entries(listMap).forEach(([key, list]) => {
     if (key in input) {
-      assertOneOf(input[key], list, `tsconfigRaw.compilerOptions.${key}`);
+      assertOneOf(
+        input[key],
+        list,
+        dotted(Field.TsconfigRaw, Field.CompilerOptions, key),
+      );
     }
   });
 }
@@ -94,16 +112,34 @@ export function assertCompilerOptionsListValue(
 export function assertPaths(
   input: unknown,
 ): asserts input is Record<string, string[]> {
-  assertType(input, "object", "tsconfigRaw.compilerOptions.paths");
+  const tsconfigRaw_compilerOptions_paths = dotted(
+    Field.TsconfigRaw,
+    Field.CompilerOptions,
+    Field.Paths,
+  );
+  assertType(
+    input,
+    "object",
+    tsconfigRaw_compilerOptions_paths,
+  );
 
   for (const [key, value] of Object.entries(input)) {
-    assertType(value, "array", `tsconfigRaw.compilerOptions.paths.${key}`);
+    const tsconfigRaw_compilerOptions_paths_key = dotted(
+      tsconfigRaw_compilerOptions_paths,
+      key,
+    );
+
+    assertType(
+      value,
+      "array",
+      tsconfigRaw_compilerOptions_paths_key,
+    );
 
     for (const [index, item] of Object.entries(value)) {
       assertType(
         item,
         "string",
-        `tsconfigRaw.compilerOptions.paths.${key}.${index}`,
+        dotted(tsconfigRaw_compilerOptions_paths_key, index),
       );
     }
   }
@@ -145,7 +181,11 @@ function assertOneOf<T extends keyof TypeMap>(
   if (!expected.includes(input)) {
     const iter = expected.map(quoted);
     const oneOf = formatter.format(iter);
-    const message = `'${name}' should be one of ${oneOf} but ${quoted(input)}`;
+    const message = format(Message.Invalid, {
+      name,
+      expected: `one of ${oneOf}`,
+      actual: quoted(input),
+    });
 
     throw new Error(message);
   }

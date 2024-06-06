@@ -1150,7 +1150,9 @@
     "dependencies": [
       "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.10",
       "jsr:@miyauci/esbuild-import-map@1.0.0-beta.3",
+      "jsr:@miyauci/format@^1.1.0",
       "jsr:@std/expect@^0.224.3",
+      "jsr:@std/json@^0.224.1",
       "jsr:@std/jsonc@^0.224.0",
       "jsr:@std/path@^0.225.1",
       "jsr:@std/testing@^0.224.0",
