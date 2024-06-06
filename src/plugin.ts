@@ -8,10 +8,12 @@ import {
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
 import { fetchDenoConfig } from "@deno/deno-config";
+import { format } from "@miyauci/format";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { resolveURL } from "./utils.ts";
 import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
+import { Message } from "./constants.ts";
 
 export interface DenoPluginOptions {
   /** Deno config as JavaScript value. */
@@ -63,7 +65,9 @@ export function denoPlugin(
       const config = options?.config
         ? options.config
         : await fetchDenoConfig(configURL).catch((e) => {
-          const message = `Fail to fetch deno config from '${configURL}'`;
+          const message = format(Message.FailFetchDenoConfig, {
+            location: configURL,
+          });
 
           throw new Error(message, { cause: e });
         });

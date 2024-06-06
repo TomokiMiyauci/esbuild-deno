@@ -1,6 +1,8 @@
 import type { Plugin, TsconfigRaw } from "esbuild";
 import type { DenoConfig } from "./deno_config.ts";
 import { mergeTsconfigRawPlugin } from "./tsconfig_raw.ts";
+import { format } from "@miyauci/format";
+import { Message } from "./constants.ts";
 
 export type CompilerOptions = Exclude<DenoConfig["compilerOptions"], undefined>;
 
@@ -13,7 +15,12 @@ export function assertCompilerOptions(
   compilerOptions: CompilerOptions,
 ): asserts compilerOptions is EsbuildCompilerOptions {
   if (compilerOptions.jsx === "precompile") {
-    throw new Error(`'compilerOptions.jsx' is not supported. 'precompile'`);
+    const message = format(Message.NotSupported, {
+      name: "compilerOptions.jsx",
+      actual: "'precompile'",
+    });
+
+    throw new Error(message);
   }
 }
 
