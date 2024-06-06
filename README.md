@@ -34,7 +34,7 @@ deno add @miyauci/esbuild-deno
 
 ## Usage
 
-The `config.location` is the deno config location. It can be `URL` object or
+The first argument is the deno config location. It can be `URL` object or
 `string`.
 
 ```ts
@@ -55,7 +55,7 @@ If only location is specified, deno config is automatically fetched.
 
 ### Deno Config as Value
 
-You can specify the deno config as a value in `config.value`.
+You can specify the deno config as a value.
 
 ```ts
 import { type DenoConfig, denoPlugin } from "@miyauci/esbuild-deno";
@@ -91,10 +91,10 @@ Plugin adds the following functions, in the order listed.
 
 ### Initialization of Compiler Options
 
-Deno config's `compilerOptions` field is reflected in esbuild's `tsConfigRaw`
+Deno config's `compilerOptions` field is reflected in esbuild's `tsconfigRaw`
 field.
 
-Note that if there are other plugins that reference `tsConfigRaw`, this plugin
+Note that if there are other plugins that reference `tsconfigRaw`, this plugin
 should be added first.
 
 ```ts
@@ -102,10 +102,10 @@ import { denoPlugin } from "@miyauci/esbuild-deno";
 import { build, type Plugin } from "esbuild";
 
 declare const location: URL | string;
-declare const tsConfigRawDependantPlugin: Plugin;
+declare const tsconfigRawDependantPlugin: Plugin;
 
 await build({
-  plugins: [denoPlugin(location), tsConfigRawDependantPlugin],
+  plugins: [denoPlugin(location), tsconfigRawDependantPlugin],
 });
 ```
 
