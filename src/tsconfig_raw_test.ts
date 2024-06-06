@@ -3,35 +3,35 @@ import {
   assertCompilerOptionsListValue,
   assertCompilerOptionsType,
   assertPaths,
-  assertTsConfigRaw,
-  parseTsConfigRaw,
+  assertTsconfigRaw,
+  parseTsconfigRaw,
 } from "./tsconfig_raw.ts";
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { JsonValue } from "@std/jsonc";
 
-describe("parseTsConfigRaw", () => {
+describe("parseTsconfigRaw", () => {
   it("should throw error if the input is invalid JSON format", () => {
-    expect(() => parseTsConfigRaw("")).toThrow();
+    expect(() => parseTsconfigRaw("")).toThrow();
   });
 
   it("should return object", () => {
-    expect(parseTsConfigRaw("{}")).toEqual({});
+    expect(parseTsconfigRaw("{}")).toEqual({});
   });
 });
 
-describe("assertTsConfigRaw", () => {
+describe("assertTsconfigRaw", () => {
   it("should throw error if input is not object", () => {
-    expect(() => assertTsConfigRaw("")).toThrow();
+    expect(() => assertTsconfigRaw("")).toThrow();
   });
 
   it("should throw error if input.compilerOptions is invalid", () => {
-    expect(() => assertTsConfigRaw({ compilerOptions: "" })).toThrow();
+    expect(() => assertTsconfigRaw({ compilerOptions: "" })).toThrow();
   });
 
   it("should do anything if input is valid", () => {
-    expect(assertTsConfigRaw({})).toBeFalsy();
-    expect(assertTsConfigRaw({ compilerOptions: {} })).toBeFalsy();
+    expect(assertTsconfigRaw({})).toBeFalsy();
+    expect(assertTsconfigRaw({ compilerOptions: {} })).toBeFalsy();
   });
 });
 

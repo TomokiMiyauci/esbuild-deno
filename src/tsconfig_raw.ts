@@ -1,16 +1,16 @@
 import { type Plugin, TsconfigRaw } from "esbuild";
 
-export function mergeTsConfigRawPlugin(
+export function mergeTsconfigRawPlugin(
   tsconfigRaw: TsconfigRaw,
 ): Plugin {
   return {
     name: "merge-tsconfig-raw",
     setup(build) {
-      const rootTsconfigRaw = normalizeTsConfigRaw(
+      const rootTsconfigRaw = normalizeTsconfigRaw(
         build.initialOptions.tsconfigRaw,
       );
 
-      build.initialOptions.tsconfigRaw = mergeTsConfigRaw(
+      build.initialOptions.tsconfigRaw = mergeTsconfigRaw(
         tsconfigRaw,
         rootTsconfigRaw,
       );
@@ -21,7 +21,7 @@ export function mergeTsConfigRawPlugin(
 /**
  * @throws {Error}
  */
-export function parseTsConfigRaw(input: string): TsconfigRaw {
+export function parseTsconfigRaw(input: string): TsconfigRaw {
   let result;
 
   try {
@@ -30,12 +30,12 @@ export function parseTsConfigRaw(input: string): TsconfigRaw {
     throw new Error("'tsconfigRaw' is invalid JSON format", { cause: e });
   }
 
-  assertTsConfigRaw(result);
+  assertTsconfigRaw(result);
 
   return result;
 }
 
-export function assertTsConfigRaw(
+export function assertTsconfigRaw(
   input: unknown,
 ): asserts input is TsconfigRaw {
   assertType(input, "object", "tsconfigRaw");
@@ -162,7 +162,7 @@ function quoted(input: unknown): string {
   return `${input}`;
 }
 
-export function mergeTsConfigRaw(
+export function mergeTsconfigRaw(
   left: TsconfigRaw,
   right: TsconfigRaw,
 ): TsconfigRaw {
@@ -171,10 +171,10 @@ export function mergeTsConfigRaw(
   };
 }
 
-export function normalizeTsConfigRaw(
+export function normalizeTsconfigRaw(
   tsconfigRaw: string | TsconfigRaw | undefined,
 ): TsconfigRaw {
-  if (typeof tsconfigRaw === "string") return parseTsConfigRaw(tsconfigRaw);
+  if (typeof tsconfigRaw === "string") return parseTsconfigRaw(tsconfigRaw);
 
   if (!tsconfigRaw) return {};
 
