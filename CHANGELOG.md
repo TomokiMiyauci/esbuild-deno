@@ -1,3 +1,11 @@
+# [1.0.0-beta.3](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.2...1.0.0-beta.3) (2024-06-06)
+
+
+### Features
+
+* **tsconfig_raw:** add deps, improve error message ([4b6e219](https://github.com/TomokiMiyauci/esbuild-deno/commit/4b6e21988ca5d081a6420adcbd329f83b93d5640))
+* **tsconfig_raw:** add validation for ts config raw ([e4a7533](https://github.com/TomokiMiyauci/esbuild-deno/commit/e4a753349eb09116f286eab249e3304b7d938682))
+
 # [1.0.0-beta.2](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.1...1.0.0-beta.2) (2024-06-05)
 
 
