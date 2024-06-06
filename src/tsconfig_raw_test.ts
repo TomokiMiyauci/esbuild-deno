@@ -4,14 +4,48 @@ import {
   assertCompilerOptionsType,
   assertPaths,
   assertTsconfigRaw,
+  isObject,
   mergeTsconfigRaw,
+  mergeTsconfigRawPlugin,
   normalizeTsconfigRaw,
   parseTsconfigRaw,
 } from "./tsconfig_raw.ts";
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
-import { JsonValue } from "@std/jsonc";
-import { TsconfigRaw } from "esbuild";
+import { type JsonValue } from "@std/jsonc";
+import { build, stop, type TsconfigRaw } from "esbuild";
+
+describe("mergeTsconfigRawPlugin", () => {
+  it("should initialize tsconfigRaw before resolving", async () => {
+    await build({
+      stdin: { contents: `` },
+      plugins: [
+        mergeTsconfigRawPlugin({
+          compilerOptions: { alwaysStrict: false, jsx: "react-jsx" },
+        }),
+        {
+          name: "testing",
+          setup(build) {
+            build.onStart(() => {
+              expect(build.initialOptions.tsconfigRaw).toEqual({
+                compilerOptions: {
+                  alwaysStrict: true,
+                  jsx: "react-jsx",
+                },
+              });
+            });
+          },
+        },
+      ],
+      platform: "node",
+      write: false,
+      bundle: true,
+      tsconfigRaw: { compilerOptions: { alwaysStrict: true } },
+    });
+
+    await stop();
+  });
+});
 
 describe("parseTsconfigRaw", () => {
   it("should throw error if the input is invalid JSON format", () => {
@@ -211,6 +245,34 @@ describe("mergeTsconfigRaw", () => {
 
     table.forEach(([left, right, expected]) => {
       expect(mergeTsconfigRaw(left, right)).toEqual(expected);
+    });
+  });
+});
+
+describe("isObject", () => {
+  it("should return true", () => {
+    const table: unknown[] = [
+      {},
+      { a: "" },
+      new Object(),
+    ];
+
+    table.forEach((input) => {
+      expect(isObject(input)).toBeTruthy();
+    });
+  });
+
+  it("should return false", () => {
+    const table: unknown[] = [
+      0,
+      "",
+      false,
+      [],
+      [""],
+    ];
+
+    table.forEach((input) => {
+      expect(isObject(input)).toBeFalsy();
     });
   });
 });

@@ -1,7 +1,7 @@
 {
   "name": "@miyauci/esbuild-deno",
   "tasks": {
-    "test": "deno test --allow-read --doc",
+    "test": "deno test --allow-read --allow-env --allow-run --doc",
     "build-wasm": "deno run -A jsr:@deno/wasmbuild@^0.17.1 --out src/deno_config/js"
   },
   "imports": {
