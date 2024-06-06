@@ -34,8 +34,7 @@ deno add @miyauci/esbuild-deno
 
 ## Usage
 
-The first argument is the deno config location. It can be `URL` object or
-`string`.
+The first argument is the deno config path.
 
 ```ts
 import { denoPlugin } from "@miyauci/esbuild-deno";
@@ -61,7 +60,7 @@ You can specify the deno config as a value.
 import { type DenoConfig, denoPlugin } from "@miyauci/esbuild-deno";
 import { build } from "esbuild";
 
-declare const location: URL | string;
+declare const configPath: string;
 const config = {
   compilerOptions: {
     jsx: "react-jsx",
@@ -80,7 +79,7 @@ await build({
   format: "esm",
   bundle: true,
   plugins: [
-    denoPlugin(location, { config }),
+    denoPlugin(configPath, { config }),
   ],
 });
 ```
@@ -101,11 +100,11 @@ should be added first.
 import { denoPlugin } from "@miyauci/esbuild-deno";
 import { build, type Plugin } from "esbuild";
 
-declare const location: URL | string;
+declare const configPath: string;
 declare const tsconfigRawDependantPlugin: Plugin;
 
 await build({
-  plugins: [denoPlugin(location), tsconfigRawDependantPlugin],
+  plugins: [denoPlugin(configPath), tsconfigRawDependantPlugin],
 });
 ```
 

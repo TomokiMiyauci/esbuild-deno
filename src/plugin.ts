@@ -7,11 +7,13 @@ import {
   importMapPlugin,
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
-import { fetchDenoConfig } from "@deno/deno-config";
+import { readDenoConfig } from "@deno/deno-config";
 import { format } from "@miyauci/format";
+import { dirname } from "@std/path/dirname";
+import { toFileUrl } from "@std/path/to-file-url";
 import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
-import { resolveURL } from "./utils.ts";
+import { resolveLock, resolvePath } from "./utils.ts";
 import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
 import { Message } from "./constants.ts";
 
@@ -28,10 +30,9 @@ export interface DenoPluginOptions {
 
 /** Create esbuild plugin for deno.
  *
- * @param location Location of deno config.
+ * @param configPath Path to deno config.
  *
- * If it is an absolute path, it is converted to a file URL.
- * If it is a relative path, it is resolved based on the current directory and converted to a file URL.
+ * If it is a relative path, it is resolved based on the current directory.
  *
  * If {@link DenoPluginOptions.config} is not specified, deno config is fetched using this.
  *
@@ -53,20 +54,21 @@ export interface DenoPluginOptions {
  * ```
  */
 export function denoPlugin(
-  location: URL | string,
+  configPath: string,
   options?: DenoPluginOptions,
 ): Plugin {
   return {
     name: "deno",
     async setup(build) {
       const cwd = build.initialOptions.absWorkingDir || Deno.cwd();
-      const configURL = resolveURL(location, cwd);
+      const absConfigPath = resolvePath(configPath, cwd);
+      const configURL = toFileUrl(absConfigPath);
 
       const config = options?.config
         ? options.config
-        : await fetchDenoConfig(configURL).catch((e) => {
-          const message = format(Message.FailFetchDenoConfig, {
-            location: configURL,
+        : await readDenoConfig(configURL).catch((e) => {
+          const message = format(Message.FailReadConfig, {
+            url: configURL,
           });
 
           throw new Error(message, { cause: e });
@@ -86,9 +88,12 @@ export function denoPlugin(
         await importMapPlugin(importMapPluginArgs).setup(build);
       }
 
+      const configDir = dirname(absConfigPath);
+      const lock = resolveLock(config.lock, { cwd, configDir });
       const denoSpecifierPluginOptions = {
         nodeModulesDir: config?.nodeModulesDir,
         denoDir: options?.denoDir,
+        lock,
       } satisfies DenoSpecifierPluginOptions;
       await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
     },

@@ -1,23 +1,27 @@
-import { toFileUrl } from "@std/path/to-file-url";
 import { isAbsolute } from "@std/path/is-absolute";
 import { resolve } from "@std/path/resolve";
+import { join } from "@std/path/join";
 
-/**
- * This is only guaranteed to work with the Deno Runtime.
+/** Resolve path to absolute.
  *
- * You must give the `--allow-read` flag as permission.
+ * @returns {string} Absolute path
  */
-export function resolveURL(
-  url: URL | string,
+export function resolvePath(
+  path: string,
   baseDir: string,
-): URL {
-  if (typeof url !== "string") return url;
+): string {
+  const absPath = isAbsolute(path) ? resolve(path) : resolve(baseDir, path);
 
-  const parsed = URL.parse(url);
+  return absPath;
+}
 
-  if (parsed) return parsed;
+export function resolveLock(
+  lock: string | boolean | undefined,
+  { cwd, configDir }: { cwd: string; configDir: string },
+): string | undefined {
+  if (typeof lock === "string") return resolvePath(lock, configDir);
 
-  const path = isAbsolute(url) ? resolve(url) : resolve(baseDir, url);
+  if (lock === false) return undefined;
 
-  return toFileUrl(path);
+  return join(cwd, "deno.lock");
 }

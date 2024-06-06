@@ -1,34 +1,24 @@
-import { resolveURL } from "./utils.ts";
+import { resolvePath } from "./utils.ts";
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
-import { resolve, toFileUrl } from "@std/path";
+import { join } from "@std/path";
 
 const cwd = Deno.cwd();
 
-describe("resolveURL", () => {
-  it("should return same", () => {
-    const table: URL[] = [
-      new URL("file:///"),
-      new URL("https://test.test"),
+describe("resolvePath", () => {
+  it("should return absolute path", () => {
+    const table: [string, string][] = [
+      ["./main.ts", join(cwd, "./main.ts")],
+      ["a", join(cwd, "a")],
+      ["../main.ts", join(cwd, "../main.ts")],
+      ["/", "/"],
+      ["/a/b", "/a/b"],
+      ["file:///", join(cwd, "file:")],
+      ["file:///main.ts", join(cwd, "file:/main.ts")],
     ];
 
-    table.forEach((url) => {
-      expect(resolveURL(url, cwd)).toBe(url);
-    });
-  });
-
-  it("should return resolved url", () => {
-    const table: [string, URL | string][] = [
-      ["./main.ts", toFileUrl(resolve("./main.ts"))],
-      ["a", toFileUrl(resolve("a"))],
-      ["../main.ts", toFileUrl(resolve("../main.ts"))],
-      ["/", "file:///"],
-      ["/a/b", "file:///a/b"],
-      ["file:///", "file:///"],
-    ];
-
-    table.forEach(([url, expected]) => {
-      expect(resolveURL(url, cwd)).toEqual(new URL(expected));
+    table.forEach(([path, expected]) => {
+      expect(resolvePath(path, cwd)).toEqual(expected);
     });
   });
 });

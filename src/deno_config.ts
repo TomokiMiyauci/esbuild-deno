@@ -1,10 +1,16 @@
 import { type DenoConfig as _DenoConfig } from "@deno/deno-config";
 import { dirname } from "@std/url";
-import { resolveURL } from "./utils.ts";
+import { resolvePath } from "./utils.ts";
+import { toFileUrl } from "@std/path";
 
 export type DenoConfig = Pick<
   _DenoConfig,
-  "compilerOptions" | "imports" | "scopes" | "nodeModulesDir" | "importMap"
+  | "compilerOptions"
+  | "imports"
+  | "scopes"
+  | "nodeModulesDir"
+  | "importMap"
+  | "lock"
 >;
 
 export type ImportMap = Pick<DenoConfig, "imports" | "scopes">;
@@ -26,10 +32,11 @@ export async function resolveImportMap(
 
   if (typeof importMap === "string") {
     const baseDir = dirname(baseURL);
-    const url = resolveURL(importMap, baseDir.pathname);
+    const absPath = resolvePath(importMap, baseDir.pathname);
+    const url = toFileUrl(absPath);
 
-    const res = await fetch(url);
-    const json = await res.json() as ImportMap;
+    const text = await Deno.readTextFile(url);
+    const json = JSON.parse(text) as ImportMap;
 
     return {
       baseURL: url,

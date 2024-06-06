@@ -6,9 +6,8 @@ import { type DenoConfigurationFileSchema as DenoConfig } from "./types.ts";
 
 export { DenoConfig };
 
-export async function fetchDenoConfig(url: URL): Promise<DenoConfig> {
-  const res = await fetch(url);
-  const denoConfigText = await res.text();
+export async function readDenoConfig(url: URL): Promise<DenoConfig> {
+  const denoConfigText = await Deno.readTextFile(url);
 
   const config = JSONC.parse(denoConfigText);
 
