@@ -1,7 +1,7 @@
 export const enum Message {
   InvalidJson = "'{name}' is invalid JSON format",
   Invalid = "'{name}' should be {expected} but {actual}",
-  FailReadConfig = "reading config file '{url}'",
+  FailResolveImportMap = "Unable to resolve import map in '{url}'",
   NotSupported = "'{name}' is not supported. {actual}",
 }
 

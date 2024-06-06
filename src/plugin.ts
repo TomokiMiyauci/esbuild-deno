@@ -66,13 +66,7 @@ export function denoPlugin(
 
       const config = options?.config
         ? options.config
-        : await readDenoConfig(configURL).catch((e) => {
-          const message = format(Message.FailReadConfig, {
-            url: configURL,
-          });
-
-          throw new Error(message, { cause: e });
-        });
+        : await readDenoConfig(configURL);
 
       await initCompilerOptionsPlugin(config.compilerOptions).setup(build);
 
