@@ -4,7 +4,7 @@
 // deno-fmt-ignore-file
 /// <reference types="./import_map_wasm.generated.d.ts" />
 
-// source-hash: 6617d827b0c2ca0844d557e939a96a48ce686672
+// source-hash: f8fb797ba7ce25b98f8bf0ed55df9b860e923c89
 let wasm;
 
 const heap = new Array(128).fill(undefined);

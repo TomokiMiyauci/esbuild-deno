@@ -1,4 +1,4 @@
-use import_map::ImportMap;
+use import_map::{ImportMap, ImportMapOptions};
 use serde::Serialize;
 use std::str::FromStr;
 use url::Url;
@@ -24,7 +24,13 @@ export interface ParsedResult {
 #[wasm_bindgen(js_name = parseImportMap)]
 pub fn parse_import_map(input: &str, url: &str) -> Result<JsValue, JsValue> {
     let url = Url::from_str(url).map_err(|op| op.to_string())?;
-    let result = import_map::parse_from_json(&url, input).map_err(|op| op.to_string())?;
+
+    let options = ImportMapOptions {
+        expand_imports: true,
+        ..ImportMapOptions::default()
+    };
+    let result = import_map::parse_from_json_with_options(&url, input, options)
+        .map_err(|op| op.to_string())?;
 
     let warnings = result.diagnostics.iter().map(|v| v.to_string()).collect();
     let result = ParsedResult {
