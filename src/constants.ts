@@ -3,6 +3,8 @@ export const enum Message {
   Invalid = "'{name}' should be {expected} but {actual}",
   FailResolveImportMap = "Unable to resolve import map in '{url}'",
   NotSupported = "'{name}' is not supported. {actual}",
+  ImportMapDiagnostic = `Import map diagnostics:
+{body}`,
 }
 
 export const enum Field {

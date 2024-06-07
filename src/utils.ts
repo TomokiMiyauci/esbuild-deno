@@ -25,3 +25,15 @@ export function resolveLock(
 
   return join(cwd, "deno.lock");
 }
+
+export function tabbed(indent: number): (input: string) => string {
+  return (input: string): string => {
+    const prefix = " ".repeat(indent);
+
+    return `${prefix}${input}`;
+  };
+}
+
+export function listed(input: string): `- ${string}` {
+  return `- ${input}`;
+}

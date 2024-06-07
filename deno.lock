@@ -6,7 +6,7 @@
       "jsr:@deno/graph@^0.69.7": "jsr:@deno/graph@0.69.10",
       "jsr:@miyauci/esbuild-deno-env@1.0.0": "jsr:@miyauci/esbuild-deno-env@1.0.0",
       "jsr:@miyauci/esbuild-deno-env@1.0.0-beta.1": "jsr:@miyauci/esbuild-deno-env@1.0.0-beta.1",
-      "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.10": "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.10",
+      "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.11": "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.11",
       "jsr:@miyauci/esbuild-import-map@1.0.0-beta.1": "jsr:@miyauci/esbuild-import-map@1.0.0-beta.1",
       "jsr:@miyauci/esbuild-import-map@1.0.0-beta.3": "jsr:@miyauci/esbuild-import-map@1.0.0-beta.3",
       "jsr:@miyauci/format@^1.1.0": "jsr:@miyauci/format@1.1.0",
@@ -84,8 +84,8 @@
           "npm:esbuild@^0.21.4"
         ]
       },
-      "@miyauci/esbuild-deno-specifier@1.0.0-beta.10": {
-        "integrity": "6ad9c060e10f9254385ce094a3c7e030c39f4428822947c04eb628db43fa1573",
+      "@miyauci/esbuild-deno-specifier@1.0.0-beta.11": {
+        "integrity": "3a1538d6d3d3469dac47541723bf4d226127a6f20abd40833011255e8369363c",
         "dependencies": [
           "jsr:@deno/cache-dir@^0.8.0",
           "jsr:@miyauci/format@^1.1.0",
@@ -1148,7 +1148,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.10",
+      "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.11",
       "jsr:@miyauci/esbuild-import-map@1.0.0-beta.3",
       "jsr:@miyauci/format@^1.1.0",
       "jsr:@std/expect@^0.224.3",

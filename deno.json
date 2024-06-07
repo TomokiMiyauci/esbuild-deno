@@ -2,12 +2,13 @@
   "name": "@miyauci/esbuild-deno",
   "tasks": {
     "test": "deno test --allow-read --allow-env --allow-run --doc",
-    "build-wasm": "deno run -A jsr:@deno/wasmbuild@^0.17.1 --out src/deno_config/js"
+    "build-wasm": "deno run -A jsr:@deno/wasmbuild@^0.17.1"
   },
   "imports": {
     "@deno/deno-config": "./src/deno_config/js/mod.ts",
+    "@deno/import-map": "./src/import_map/js/mod.ts",
     "@miyauci/esbuild-deno": "./src/mod.ts",
-    "@miyauci/esbuild-deno-specifier": "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.10",
+    "@miyauci/esbuild-deno-specifier": "jsr:@miyauci/esbuild-deno-specifier@1.0.0-beta.11",
     "@miyauci/esbuild-import-map": "jsr:@miyauci/esbuild-import-map@1.0.0-beta.3",
     "@miyauci/format": "jsr:@miyauci/format@^1.1.0",
     "@std/expect": "jsr:@std/expect@^0.224.3",
