@@ -11,12 +11,12 @@ import { readDenoConfig } from "@deno/deno-config";
 import { dirname } from "@std/path/dirname";
 import { toFileUrl } from "@std/path/to-file-url";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
+import { formatImportMapDiagnostics, resolvePath } from "./utils.ts";
 import {
-  formatImportMapDiagnostics,
+  type DenoConfig,
+  resolveImportMap,
   resolveLock,
-  resolvePath,
-} from "./utils.ts";
-import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
+} from "./deno_config.ts";
 import { parseImportMap } from "@deno/import-map";
 
 export interface DenoPluginOptions {

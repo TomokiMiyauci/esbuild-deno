@@ -1,6 +1,5 @@
 import { isAbsolute } from "@std/path/is-absolute";
 import { resolve } from "@std/path/resolve";
-import { join } from "@std/path/join";
 import { format } from "@miyauci/format";
 import { Message } from "./constants.ts";
 
@@ -15,17 +14,6 @@ export function resolvePath(
   const absPath = isAbsolute(path) ? resolve(path) : resolve(baseDir, path);
 
   return absPath;
-}
-
-export function resolveLock(
-  lock: string | boolean | undefined,
-  { cwd, configDir }: { cwd: string; configDir: string },
-): string | undefined {
-  if (typeof lock === "string") return resolvePath(lock, configDir);
-
-  if (lock === false) return undefined;
-
-  return join(cwd, "deno.lock");
 }
 
 export function tabbed(indent: number): (input: string) => string {
