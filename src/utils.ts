@@ -1,6 +1,8 @@
 import { isAbsolute } from "@std/path/is-absolute";
 import { resolve } from "@std/path/resolve";
 import { join } from "@std/path/join";
+import { format } from "@miyauci/format";
+import { Message } from "./constants.ts";
 
 /** Resolve path to absolute.
  *
@@ -36,4 +38,12 @@ export function tabbed(indent: number): (input: string) => string {
 
 export function listed(input: string): `- ${string}` {
   return `- ${input}`;
+}
+
+export function formatImportMapDiagnostics(diagnostics: string[]): string {
+  const body = diagnostics.map(listed).map(tabbed(2))
+    .join("\n");
+  const message = format(Message.ImportMapDiagnostic, { body });
+
+  return message;
 }
