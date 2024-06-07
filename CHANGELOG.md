@@ -1,3 +1,11 @@
+# [1.0.0-beta.4](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.3...1.0.0-beta.4) (2024-06-07)
+
+
+### Features
+
+* **plugin:** add validation for import map ([8a54ae1](https://github.com/TomokiMiyauci/esbuild-deno/commit/8a54ae1d6931b16422db0830d75fbdc4c8644c28))
+* **plugin:** enable lock filed, change factory interface to accept string only ([3a230e3](https://github.com/TomokiMiyauci/esbuild-deno/commit/3a230e390941a5beb6a28166617eeda97d535f87))
+
 # [1.0.0-beta.3](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.2...1.0.0-beta.3) (2024-06-06)
 
 
