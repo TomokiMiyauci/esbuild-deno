@@ -11,11 +11,11 @@ import { readDenoConfig } from "@deno/deno-config";
 import { dirname } from "@std/path/dirname";
 import { toFileUrl } from "@std/path/to-file-url";
 import { format } from "@miyauci/format";
-import { embedImportMaps } from "./import_map.ts";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
 import { listed, resolveLock, resolvePath, tabbed } from "./utils.ts";
 import { type DenoConfig, resolveImportMap } from "./deno_config.ts";
 import { Message } from "./constants.ts";
+import { parseImportMap } from "@deno/import-map";
 
 export interface DenoPluginOptions {
   /** Deno config as JavaScript value. */
@@ -73,15 +73,21 @@ export function denoPlugin(
       const resolvedImportMap = await resolveImportMap(config, configURL);
 
       if (resolvedImportMap) {
-        if (resolvedImportMap.warnings.length) {
-          const body = resolvedImportMap.warnings.map(listed).map(tabbed(2))
+        const { importMap, warnings } = parseImportMap(
+          resolvedImportMap.source,
+          resolvedImportMap.baseURL.toString(),
+        );
+
+        if (warnings.length) {
+          const body = warnings.map(listed).map(tabbed(2))
             .join("\n");
           const message = format(Message.ImportMapDiagnostic, { body });
 
           console.warn(message);
         }
 
-        const importMap = embedImportMaps(resolvedImportMap.importMap);
+        console.log(importMap);
+
         const importMapPluginArgs = {
           baseURL: resolvedImportMap.baseURL,
           importMap,

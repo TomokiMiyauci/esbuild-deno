@@ -2,7 +2,6 @@ import { type DenoConfig as _DenoConfig } from "@deno/deno-config";
 import { dirname } from "@std/url/dirname";
 import { toFileUrl } from "@std/path/to-file-url";
 import { format } from "@miyauci/format";
-import { type ParsedResult, parseImportMap } from "@deno/import-map";
 import { resolvePath } from "./utils.ts";
 import { Message } from "./constants.ts";
 
@@ -18,7 +17,8 @@ export type DenoConfig = Pick<
 
 type PartialDenoConfig = Pick<DenoConfig, "imports" | "scopes" | "importMap">;
 
-export interface ResolvedImportMap extends ParsedResult {
+export interface ResolvedImportMap {
+  source: string;
   baseURL: URL;
 }
 
@@ -29,7 +29,7 @@ export async function resolveImportMap(
   const { imports, scopes, importMap } = config;
 
   if (imports || scopes) {
-    return { baseURL, importMap: { imports, scopes }, warnings: [] };
+    return { baseURL, source: JSON.stringify({ imports, scopes }) };
   }
 
   if (typeof importMap === "string") {
@@ -37,16 +37,14 @@ export async function resolveImportMap(
     const absPath = resolvePath(importMap, baseDir.pathname);
     const url = toFileUrl(absPath);
 
-    let text: string;
-
     try {
-      text = await Deno.readTextFile(url);
+      const source = await Deno.readTextFile(url);
+
+      return { source, baseURL: url };
     } catch (e) {
       const message = format(Message.FailResolveImportMap, { url });
 
       throw new Error(message, { cause: e });
     }
-
-    return { ...parseImportMap(text, url), baseURL: url };
   }
 }
