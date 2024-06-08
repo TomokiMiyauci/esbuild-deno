@@ -1,6 +1,6 @@
 import { parse } from "@std/jsonc";
 import { format } from "@miyauci/format";
-import { isObject } from "../../utils.ts";
+import { isObject } from "../utils.ts";
 import { Message } from "./constants.ts";
 import { assertDenoConfig, type JsonValue } from "./validator.ts";
 import { type DenoConfigurationFileSchema as DenoConfig } from "./types.ts";

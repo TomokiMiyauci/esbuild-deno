@@ -1,8 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
-  "src/deno_config/wasm"
-, "src/import_map/wasm"]
+members = ["src/import_map/wasm"]
 
 [profile.release]
 codegen-units = 1
