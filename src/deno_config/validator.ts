@@ -5,7 +5,10 @@ export function assertDenoConfig(
 ): asserts input is DenoConfig & Rest {
   assertDenoRootConfig(input);
 
+  if (input.exclude) assertArrayString(input.exclude, "exclude");
   if (input.compilerOptions) assertCompilerOptions(input.compilerOptions);
+  if (input.unstable) assertArrayString(input.unstable, "unstable");
+  if (input.workspaces) assertArrayString(input.workspaces, "workspaces");
 }
 
 interface Rest {
@@ -18,6 +21,29 @@ export function assertCompilerOptions(
   assertCompilerOptionsType(input);
 
   if (typeof input.jsx === "string") assertJsx(input.jsx);
+
+  if (input.jsxPrecompileSkipElements) {
+    assertArrayString(
+      input.jsxPrecompileSkipElements,
+      "jsxPrecompileSkipElements",
+    );
+  }
+
+  if (input.lib) assertArrayString(input.lib, "lib");
+}
+
+export function assertArrayString(
+  input: JsonValue[],
+  name: string,
+): asserts input is string[] {
+  for (const [key, value] of input.entries()) {
+    const type = toType(value);
+    if (type !== "string") {
+      const cause = Error(`invalid type: ${type}, expected string`);
+
+      throw new Error(`Fail to parse "${name}.${key}"`, { cause });
+    }
+  }
 }
 
 function assertDenoRootConfig(
@@ -77,18 +103,21 @@ const rootTypeMap = {
   test: "object",
   publish: "object",
   bench: "object",
-  // lock: ["boolean", "string"],
+  lock: ["boolean", "string"],
   unstable: "array",
   name: "string",
   version: "string",
-  // exports: ["string", "object"],
+  exports: ["string", "object"],
   workspaces: "array",
 } satisfies Record<string, keyof type | (keyof type)[]>;
 
 type RootTypeMap = typeof rootTypeMap;
 
 type DenoRootConfig = {
-  [k in keyof RootTypeMap]?: type[RootTypeMap[k]];
+  [k in keyof RootTypeMap]?: RootTypeMap[k] extends infer U extends keyof type
+    ? type[U]
+    : RootTypeMap[k] extends infer U extends (keyof type)[] ? type[U[number]]
+    : never;
 };
 
 type CompilerOptionsType = {
