@@ -4,7 +4,6 @@ import {
   assertCompilerOptionsType,
   assertPaths,
   assertTsconfigRaw,
-  isObject,
   mergeTsconfigRaw,
   mergeTsconfigRawPlugin,
   normalizeTsconfigRaw,
@@ -245,34 +244,6 @@ describe("mergeTsconfigRaw", () => {
 
     table.forEach(([left, right, expected]) => {
       expect(mergeTsconfigRaw(left, right)).toEqual(expected);
-    });
-  });
-});
-
-describe("isObject", () => {
-  it("should return true", () => {
-    const table: unknown[] = [
-      {},
-      { a: "" },
-      new Object(),
-    ];
-
-    table.forEach((input) => {
-      expect(isObject(input)).toBeTruthy();
-    });
-  });
-
-  it("should return false", () => {
-    const table: unknown[] = [
-      0,
-      "",
-      false,
-      [],
-      [""],
-    ];
-
-    table.forEach((input) => {
-      expect(isObject(input)).toBeFalsy();
     });
   });
 });

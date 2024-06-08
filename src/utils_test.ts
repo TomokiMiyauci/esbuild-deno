@@ -1,4 +1,4 @@
-import { resolvePath } from "./utils.ts";
+import { isObject, resolvePath } from "./utils.ts";
 import { describe, it } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { join } from "@std/path";
@@ -19,6 +19,34 @@ describe("resolvePath", () => {
 
     table.forEach(([path, expected]) => {
       expect(resolvePath(path, cwd)).toEqual(expected);
+    });
+  });
+});
+
+describe("isObject", () => {
+  it("should return true", () => {
+    const table: unknown[] = [
+      {},
+      { a: "" },
+      new Object(),
+    ];
+
+    table.forEach((input) => {
+      expect(isObject(input)).toBeTruthy();
+    });
+  });
+
+  it("should return false", () => {
+    const table: unknown[] = [
+      0,
+      "",
+      false,
+      [],
+      [""],
+    ];
+
+    table.forEach((input) => {
+      expect(isObject(input)).toBeFalsy();
     });
   });
 });
