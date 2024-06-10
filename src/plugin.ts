@@ -43,21 +43,6 @@ export interface DenoConfigPluginOptions {
  * If {@link DenoConfigPluginOptions.config} is not specified, deno config is fetched using this.
  *
  * @param options Plugin options.
- *
- * @example
- * ```ts
- * import { denoConfigPlugin } from "@miyauci/esbuild-deno";
- * import { build } from "esbuild";
- *
- * await build({
- *  stdin: {
- *    contents: `import "jsr:@std/assert";`,
- *  },
- *  format: "esm",
- *  bundle: true,
- *  plugins: [denoConfigPlugin("path/to/deno.json")],
- * });
- * ```
  */
 export function denoConfigPlugin(
   path: string,
