@@ -7,7 +7,11 @@ import {
   importMapPlugin,
   type ImportMapPluginArgs,
 } from "@miyauci/esbuild-import-map";
-import { readDenoConfig } from "@deno/deno-config";
+import {
+  type AbsolutePath,
+  findDenoConfig,
+  readDenoConfig,
+} from "@deno/deno-config";
 import { dirname } from "@std/path/dirname";
 import { toFileUrl } from "@std/path/to-file-url";
 import { initCompilerOptionsPlugin } from "./compiler_options.ts";
@@ -19,7 +23,7 @@ import {
 } from "./deno_config.ts";
 import { parseImportMap } from "@deno/import-map";
 
-export interface DenoPluginOptions {
+export interface DenoConfigPluginOptions {
   /** Deno config as JavaScript value. */
   config?: DenoConfig;
 
@@ -30,19 +34,19 @@ export interface DenoPluginOptions {
   denoDir?: string;
 }
 
-/** Create esbuild plugin for deno.
+/** Create esbuild plugin for deno config.
  *
- * @param configPath Path to deno config.
+ * @param path Path to deno config.
  *
  * If it is a relative path, it is resolved based on the current directory.
  *
- * If {@link DenoPluginOptions.config} is not specified, deno config is fetched using this.
+ * If {@link DenoConfigPluginOptions.config} is not specified, deno config is fetched using this.
  *
  * @param options Plugin options.
  *
  * @example
  * ```ts
- * import { denoPlugin } from "@miyauci/esbuild-deno";
+ * import { denoConfigPlugin } from "@miyauci/esbuild-deno";
  * import { build } from "esbuild";
  *
  * await build({
@@ -51,19 +55,19 @@ export interface DenoPluginOptions {
  *  },
  *  format: "esm",
  *  bundle: true,
- *  plugins: [denoPlugin("path/to/deno.json")],
+ *  plugins: [denoConfigPlugin("path/to/deno.json")],
  * });
  * ```
  */
-export function denoPlugin(
-  configPath: string,
-  options?: DenoPluginOptions,
+export function denoConfigPlugin(
+  path: string,
+  options?: DenoConfigPluginOptions,
 ): Plugin {
   return {
-    name: "deno",
+    name: "deno-config",
     async setup(build) {
       const cwd = build.initialOptions.absWorkingDir || Deno.cwd();
-      const absConfigPath = resolvePath(configPath, cwd);
+      const absConfigPath = resolvePath(path, cwd);
       const configURL = toFileUrl(absConfigPath);
 
       const config = options?.config
@@ -102,6 +106,51 @@ export function denoPlugin(
         lock,
       } satisfies DenoSpecifierPluginOptions;
       await denoSpecifierPlugin(denoSpecifierPluginOptions).setup(build);
+    },
+  };
+}
+
+export interface DenoPluginOptions {
+  /** Path to deno dir.
+   *
+   * @default DENO_DIR
+   */
+  denoDir?: string;
+}
+
+/** Create esbuild plugin for deno.
+ *
+ * @example Basic usage
+ * ```ts
+ * import { denoPlugin } from "@miyauci/esbuild-deno";
+ * import { build } from "esbuild";
+ *
+ * await build({
+ *  stdin: {
+ *    contents: `import "jsr:@std/assert";`,
+ *  },
+ *  format: "esm",
+ *  bundle: true,
+ *  plugins: [denoPlugin()],
+ * });
+ * ```
+ */
+export function denoPlugin(options?: DenoPluginOptions): Plugin {
+  return {
+    name: "deno",
+    async setup(build) {
+      const cwd =
+        (build.initialOptions.absWorkingDir || Deno.cwd()) as AbsolutePath; // This is guaranteed
+
+      const configFile = await findDenoConfig(cwd);
+      const denoDir = options?.denoDir;
+
+      if (configFile) {
+        const { config, path } = configFile;
+
+        await denoConfigPlugin(path, { config, denoDir })
+          .setup(build);
+      } else await denoSpecifierPlugin({ denoDir }).setup(build);
     },
   };
 }

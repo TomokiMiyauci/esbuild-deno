@@ -15,7 +15,6 @@ Provides the following features:
 
 - [Install](#install)
 - [Usage](#usage)
-  - [Deno Config as Value](#deno-config-as-value)
 - [Documentation](#documentation)
   - [Initialization of Compiler Options](#initialization-of-compiler-options)
   - [Import Map Resolution](#import-map-resolution)
@@ -34,7 +33,8 @@ deno add @miyauci/esbuild-deno
 
 ## Usage
 
-The first argument is the deno config path.
+Get `deno.json` or `deno.jsonc` in the current or parent directory, as in Deno
+runtime.
 
 ```ts
 import { denoPlugin } from "@miyauci/esbuild-deno";
@@ -46,41 +46,7 @@ await build({
   },
   format: "esm",
   bundle: true,
-  plugins: [denoPlugin("path/to/deno.json")],
-});
-```
-
-If only location is specified, deno config is automatically fetched.
-
-### Deno Config as Value
-
-You can specify the deno config as a value.
-
-```ts
-import { type DenoConfig, denoPlugin } from "@miyauci/esbuild-deno";
-import { build } from "esbuild";
-
-declare const configPath: string;
-const config = {
-  compilerOptions: {
-    jsx: "react-jsx",
-  },
-  imports: {
-    "react": "npm:react",
-  },
-} satisfies DenoConfig;
-
-await build({
-  stdin: {
-    contents: `const node = <div>Hello</div>;`,
-    loader: "tsx",
-    resolveDir: import.meta.dirname,
-  },
-  format: "esm",
-  bundle: true,
-  plugins: [
-    denoPlugin(configPath, { config }),
-  ],
+  plugins: [denoPlugin()],
 });
 ```
 
@@ -100,11 +66,10 @@ should be added first.
 import { denoPlugin } from "@miyauci/esbuild-deno";
 import { build, type Plugin } from "esbuild";
 
-declare const configPath: string;
 declare const tsconfigRawDependantPlugin: Plugin;
 
 await build({
-  plugins: [denoPlugin(configPath), tsconfigRawDependantPlugin],
+  plugins: [denoPlugin(), tsconfigRawDependantPlugin],
 });
 ```
 
