@@ -22,6 +22,8 @@ const jsx = or(
   value("precompile"),
 );
 
+const strArray = array(string());
+
 const compilerOptions = partial({
   allowJs: boolean(),
   allowUnreachableCode: boolean(),
@@ -34,9 +36,9 @@ const compilerOptions = partial({
   jsxFragmentFactory: string(),
   jsxImportSource: string(),
   jsxImportSourceTypes: string(),
-  jsxPrecompileSkipElements: array(string()),
+  jsxPrecompileSkipElements: strArray,
   keyofStringsOnly: boolean(),
-  lib: array(string()),
+  lib: strArray,
   noErrorTruncation: boolean(),
   noFallthroughCasesInSwitch: boolean(),
   noImplicitAny: boolean(),
@@ -60,35 +62,35 @@ const compilerOptions = partial({
 const recordStr = record(string(), string());
 const imports = and(object(), recordStr);
 const scopes = and(object(), record(string(), imports));
-const lint = partial({});
-const fmt = partial({});
-const test = partial({});
-const publish = partial({});
-const bench = partial({});
+// const lint = partial({});
+// const fmt = partial({});
+// const test = partial({});
+// const publish = partial({});
+// const bench = partial({});
 
 const denoConfig = partial({
-  compilerOptions,
+  compilerOptions: and(object(), compilerOptions),
   importMap: string(),
   imports,
   scopes,
-  exclude: array(string()),
-  lint,
-  fmt,
+  exclude: strArray,
+  // lint: and(object(), lint),
+  // fmt: and(object(), fmt),
   nodeModulesDir: boolean(),
   vendor: boolean(),
   tasks: and(object(), recordStr),
-  test,
-  publish,
-  bench,
+  // test: and(object(), test),
+  // publish: and(object(), publish),
+  // bench: and(object(), bench),
   lock: or<unknown, string | boolean>(string(), boolean()),
-  unstable: array(string()),
+  unstable: strArray,
   name: string(),
   version: string(),
   exports: or<unknown, string | Record<string, string>>(
     string(),
     and(object(), recordStr),
   ),
-  workspaces: array(string()),
+  workspaces: strArray,
 }) satisfies Validator<object, DenoConfig>;
 
 export function assertDenoConfig(
