@@ -1,7 +1,8 @@
 import { display } from "../utils.ts";
 import type { ValidationFailure, Validator } from "../types.ts";
 
-abstract class BaseValidator<In, Out extends In> implements Validator<In, Out> {
+abstract class BaseValidator<In = unknown, Out extends In = In>
+  implements Validator<In, Out> {
   is(input: In): input is Out {
     for (const _ of this.check(input)) {
       return false;
@@ -113,23 +114,9 @@ export class RecordValidator<K extends string, V>
 
   *check(input: object): Iterable<ValidationFailure> {
     for (const [k, v] of Object.entries(input)) {
-      const keyResults = this.key.check(k);
+      for (const result of this.key.check(k)) yield shiftPath(k, result);
 
-      for (const result of keyResults) {
-        yield {
-          instancePath: [k, ...result.instancePath],
-          message: result.message,
-        };
-      }
-
-      const valueResults = this.value.check(v);
-
-      for (const result of valueResults) {
-        yield {
-          instancePath: [k, ...result.instancePath],
-          message: result.message,
-        };
-      }
+      for (const result of this.value.check(v)) yield shiftPath(k, result);
     }
   }
 
@@ -187,3 +174,40 @@ const formatter = /* @__PURE__ */ new Intl.ListFormat("en", {
   style: "long",
   type: "disjunction",
 });
+
+export class PartialValidator<T extends object>
+  extends BaseValidator<object, T> {
+  constructor(
+    public record: {
+      [k in keyof T]: Validator<unknown, T[k]>;
+    },
+  ) {
+    super();
+  }
+
+  *check(input: object): Iterable<ValidationFailure> {
+    for (const key in this.record) {
+      if (!Reflect.has(input, key)) continue;
+
+      const value = Reflect.get(input, key);
+      const validator = this.record[key];
+      const failures = validator.check(value);
+
+      for (const failure of failures) yield shiftPath(key, failure);
+    }
+  }
+
+  toString(): string {
+    return `Partial<record>`;
+  }
+}
+
+function shiftPath(
+  path: string,
+  failure: ValidationFailure,
+): ValidationFailure {
+  return {
+    instancePath: [path, ...failure.instancePath],
+    message: failure.message,
+  };
+}

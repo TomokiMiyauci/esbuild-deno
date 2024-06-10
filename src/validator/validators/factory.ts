@@ -1,9 +1,9 @@
 import type { Validator } from "../types.ts";
-import { isObject } from "../../utils.ts";
 import {
   ArrayValidator,
   EqualityValidator,
   IntersectionValidator,
+  PartialValidator,
   RecordValidator,
   TypeValidator,
   UnionValidator,
@@ -25,47 +25,12 @@ export function value<const T>(value: T): Validator<unknown, T> {
   return new EqualityValidator(value);
 }
 
-export function partial<T extends Record<string, Validator>>(
-  record: T,
-): Validator<
-  unknown,
-  {
-    [k in keyof T]?: T[k] extends Validator<infer _, infer U> ? U : never;
-  }
-> {
-  return {
-    is(
-      input,
-    ): input is {
-      [k in keyof T]?: T[k] extends Validator<infer _, infer U> ? U : never;
-    } {
-      for (const _ of this.check(input)) {
-        return false;
-      }
-
-      return true;
-    },
-
-    *check(input) {
-      if (!isObject(input)) {
-        return yield { instancePath: [], message: `should be object` };
-      }
-
-      for (const key in record) {
-        if (!Reflect.has(input, key)) continue;
-
-        const value = Reflect.get(input, key);
-
-        const validator = record[key];
-
-        const result = validator.check(value);
-
-        for (const r of result) {
-          yield { instancePath: [key, ...r.instancePath], message: r.message };
-        }
-      }
-    },
-  };
+export function partial<T extends object>(
+  record: {
+    [k in keyof T]: Validator<unknown, T[k]>;
+  },
+): Validator<object, T> {
+  return new PartialValidator(record);
 }
 
 export function record<K extends string, V>(
