@@ -5,7 +5,7 @@ export function assert<In, Out extends In>(
   input: In,
   validator: Validator<In, Out>,
 ): asserts input is Out {
-  for (const failure of validator.validate(input)) {
+  for (const failure of validator.check(input)) {
     const pathStr = dotted(...failure.instancePath);
 
     const message = pathStr

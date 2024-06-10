@@ -1,8 +1,10 @@
 import { type DenoConfigurationFileSchema as DenoConfig } from "./types.ts";
 import {
+  and,
   array,
   assert,
   boolean,
+  object,
   or,
   partial,
   record,
@@ -55,8 +57,9 @@ const compilerOptions = partial({
   suppressImplicitAnyIndexErrors: boolean(),
 });
 
-const imports = record(string(), string());
-const scopes = record(string(), imports);
+const recordStr = record(string(), string());
+const imports = and(object(), recordStr);
+const scopes = and(object(), record(string(), imports));
 const lint = partial({});
 const fmt = partial({});
 const test = partial({});
@@ -73,17 +76,20 @@ const denoConfig = partial({
   fmt,
   nodeModulesDir: boolean(),
   vendor: boolean(),
-  tasks: record(string(), string()),
+  tasks: and(object(), recordStr),
   test,
   publish,
   bench,
-  lock: or(string(), boolean()),
+  lock: or<unknown, string | boolean>(string(), boolean()),
   unstable: array(string()),
   name: string(),
   version: string(),
-  exports: or(string(), record(string(), string())),
+  exports: or<unknown, string | Record<string, string>>(
+    string(),
+    and(object(), recordStr),
+  ),
   workspaces: array(string()),
-}) satisfies Validator<unknown, DenoConfig>;
+}) satisfies Validator<object, DenoConfig>;
 
 export function assertDenoConfig(
   input: JsonObject,

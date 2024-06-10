@@ -1,6 +1,8 @@
 export {
+  and,
   array,
   boolean,
+  object,
   or,
   partial,
   record,
