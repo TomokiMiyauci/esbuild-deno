@@ -1,3 +1,10 @@
+# [1.0.0-beta.5](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.4...1.0.0-beta.5) (2024-06-10)
+
+
+### Features
+
+* **plugin:** change facotry interface ([43fab3c](https://github.com/TomokiMiyauci/esbuild-deno/commit/43fab3cd52a87337fdc61f94318a6a557a33a25b))
+
 # [1.0.0-beta.4](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.3...1.0.0-beta.4) (2024-06-07)
 
 
