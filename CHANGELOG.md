@@ -1,3 +1,10 @@
+# [1.0.0-beta.6](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.5...1.0.0-beta.6) (2024-06-11)
+
+
+### Features
+
+* **plugin:** add `config` option to specify config path ([09ab51b](https://github.com/TomokiMiyauci/esbuild-deno/commit/09ab51b0152abb422bc039994f845b54deda4d12))
+
 # [1.0.0-beta.5](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.4...1.0.0-beta.5) (2024-06-10)
 
 
