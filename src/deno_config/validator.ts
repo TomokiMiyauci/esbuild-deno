@@ -22,46 +22,46 @@ const jsx = or(
   value("precompile"),
 );
 
-const strArray = array(string());
+const strArray = array(string);
 
 const compilerOptions = partial({
-  allowJs: boolean(),
-  allowUnreachableCode: boolean(),
-  allowUnusedLabels: boolean(),
-  checkJs: boolean(),
-  exactOptionalPropertyTypes: boolean(),
-  experimentalDecorators: boolean(),
+  allowJs: boolean,
+  allowUnreachableCode: boolean,
+  allowUnusedLabels: boolean,
+  checkJs: boolean,
+  exactOptionalPropertyTypes: boolean,
+  experimentalDecorators: boolean,
   jsx,
-  jsxFactory: string(),
-  jsxFragmentFactory: string(),
-  jsxImportSource: string(),
-  jsxImportSourceTypes: string(),
+  jsxFactory: string,
+  jsxFragmentFactory: string,
+  jsxImportSource: string,
+  jsxImportSourceTypes: string,
   jsxPrecompileSkipElements: strArray,
-  keyofStringsOnly: boolean(),
+  keyofStringsOnly: boolean,
   lib: strArray,
-  noErrorTruncation: boolean(),
-  noFallthroughCasesInSwitch: boolean(),
-  noImplicitAny: boolean(),
-  noImplicitOverride: boolean(),
-  noImplicitReturns: boolean(),
-  noImplicitThis: boolean(),
-  noImplicitUseStrict: boolean(),
-  noStrictGenericChecks: boolean(),
-  noUnusedLocals: boolean(),
-  noUnusedParameters: boolean(),
-  noUncheckedIndexedAccess: boolean(),
-  strict: boolean(),
-  strictBindCallApply: boolean(),
-  strictFunctionTypes: boolean(),
-  strictPropertyInitialization: boolean(),
-  strictNullChecks: boolean(),
-  suppressExcessPropertyErrors: boolean(),
-  suppressImplicitAnyIndexErrors: boolean(),
+  noErrorTruncation: boolean,
+  noFallthroughCasesInSwitch: boolean,
+  noImplicitAny: boolean,
+  noImplicitOverride: boolean,
+  noImplicitReturns: boolean,
+  noImplicitThis: boolean,
+  noImplicitUseStrict: boolean,
+  noStrictGenericChecks: boolean,
+  noUnusedLocals: boolean,
+  noUnusedParameters: boolean,
+  noUncheckedIndexedAccess: boolean,
+  strict: boolean,
+  strictBindCallApply: boolean,
+  strictFunctionTypes: boolean,
+  strictPropertyInitialization: boolean,
+  strictNullChecks: boolean,
+  suppressExcessPropertyErrors: boolean,
+  suppressImplicitAnyIndexErrors: boolean,
 });
 
-const recordStr = record(string(), string());
-const imports = and(object(), recordStr);
-const scopes = and(object(), record(string(), imports));
+const recordStr = record(string, string);
+const imports = and(object, recordStr);
+const scopes = and(object, record(string, imports));
 // const lint = partial({});
 // const fmt = partial({});
 // const test = partial({});
@@ -69,26 +69,26 @@ const scopes = and(object(), record(string(), imports));
 // const bench = partial({});
 
 const denoConfig = partial({
-  compilerOptions: and(object(), compilerOptions),
-  importMap: string(),
+  compilerOptions: and(object, compilerOptions),
+  importMap: string,
   imports,
   scopes,
   exclude: strArray,
-  // lint: and(object(), lint),
-  // fmt: and(object(), fmt),
-  nodeModulesDir: boolean(),
-  vendor: boolean(),
-  tasks: and(object(), recordStr),
-  // test: and(object(), test),
-  // publish: and(object(), publish),
-  // bench: and(object(), bench),
-  lock: or<unknown, string | boolean>(string(), boolean()),
+  // lint: and(object, lint),
+  // fmt: and(object, fmt),
+  nodeModulesDir: boolean,
+  vendor: boolean,
+  tasks: and(object, recordStr),
+  // test: and(object, test),
+  // publish: and(object, publish),
+  // bench: and(object, bench),
+  lock: or<unknown, string | boolean>(string, boolean),
   unstable: strArray,
-  name: string(),
-  version: string(),
+  name: string,
+  version: string,
   exports: or<unknown, string | Record<string, string>>(
-    string(),
-    and(object(), recordStr),
+    string,
+    and(object, recordStr),
   ),
   workspaces: strArray,
 }) satisfies Validator<object, DenoConfig>;
