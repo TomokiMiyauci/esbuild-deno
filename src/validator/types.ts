@@ -1,9 +1,15 @@
 export interface ValidationFailure {
-  /** The validation failure message. */
-  message: string;
-
   /** The path to a part of the instance. */
   instancePath: PropertyKey[];
+
+  actual: unknown;
+
+  expected: unknown;
+  by: Messenger;
+}
+
+export interface Messenger extends Serialize {
+  message: DynamicMessage;
 }
 
 export interface Validator<In = unknown, Out extends In = In>
@@ -11,8 +17,14 @@ export interface Validator<In = unknown, Out extends In = In>
   is: (input: In) => input is Out;
 
   check: (input: In) => Iterable<ValidationFailure>;
+}
 
-  toString(): string;
+export interface Expectation {
+  expect(message: string | DynamicMessage): this;
+}
+
+export interface DynamicMessage {
+  (failure: ValidationFailure): string;
 }
 
 export interface Serialize {

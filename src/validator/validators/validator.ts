@@ -1,14 +1,41 @@
-import { display } from "../utils.ts";
-import type { ValidationFailure, Validator } from "../types.ts";
+import { display, dotted } from "../utils.ts";
+import type {
+  DynamicMessage,
+  Expectation,
+  ValidationFailure,
+  Validator,
+} from "../types.ts";
+
+function defaultMessage(failure: ValidationFailure): string {
+  const pathStr = dotted(...failure.instancePath);
+  const body = `should be ${failure.expected} but ${failure.actual}`;
+  const message = pathStr ? `'${pathStr}' ${body}` : body;
+
+  return message;
+}
 
 abstract class BaseValidator<In = unknown, Out extends In = In>
-  implements Validator<In, Out> {
+  implements Validator<In, Out>, Expectation {
   is(input: In): input is Out {
     for (const _ of this.check(input)) {
       return false;
     }
 
     return true;
+  }
+
+  #message: string | DynamicMessage = defaultMessage;
+
+  expect(message: string | DynamicMessage): this {
+    this.#message = message;
+
+    return this;
+  }
+
+  message(failure: ValidationFailure): string {
+    if (typeof this.#message === "string") return this.#message;
+
+    return this.#message(failure);
   }
 
   abstract check(input: In): Iterable<ValidationFailure>;
@@ -43,7 +70,9 @@ export class TypeValidator<T extends TypeName>
     if (type !== this.type) {
       yield {
         instancePath: [],
-        message: `should be ${this.type}, actual ${type}`,
+        expected: this.type,
+        actual: type,
+        by: this,
       };
     }
   }
@@ -62,7 +91,9 @@ export class EqualityValidator<const T> extends BaseValidator<unknown, T> {
     if (input !== this.value) {
       yield {
         instancePath: [],
-        message: `should be ${this.value} actual ${input}`,
+        actual: input,
+        expected: this.value,
+        by: this,
       };
     }
   }
@@ -73,25 +104,25 @@ export class EqualityValidator<const T> extends BaseValidator<unknown, T> {
 }
 
 export class ArrayValidator<T> extends BaseValidator<unknown, T[]> {
-  constructor(public validator?: BaseValidator<unknown, T>) {
+  constructor(public validator?: Validator<unknown, T>) {
     super();
   }
 
   *check(input: unknown): Iterable<ValidationFailure> {
     if (!Array.isArray(input)) {
-      return yield { instancePath: [], message: `should be array` };
+      return yield {
+        instancePath: [],
+        actual: input,
+        expected: "array",
+        by: this,
+      };
     }
 
     if (this.validator) {
       for (const [index, value] of input.entries()) {
         const failures = this.validator.check(value);
 
-        for (const failure of failures) {
-          yield {
-            instancePath: [index, ...failure.instancePath],
-            message: failure.message,
-          };
-        }
+        for (const failure of failures) yield shiftPath(index, failure);
       }
     }
   }
@@ -159,7 +190,9 @@ export class UnionValidator<In, Out extends In> extends BaseValidator<In, Out> {
 
     yield {
       instancePath: [],
-      message: `should be ${expected}`,
+      actual: input,
+      expected,
+      by: this,
     };
   }
 
@@ -203,11 +236,11 @@ export class PartialValidator<T extends object>
 }
 
 function shiftPath(
-  path: string,
+  path: PropertyKey,
   failure: ValidationFailure,
 ): ValidationFailure {
   return {
+    ...failure,
     instancePath: [path, ...failure.instancePath],
-    message: failure.message,
   };
 }
