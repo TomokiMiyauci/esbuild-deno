@@ -96,6 +96,17 @@ export function denoConfigPlugin(
 }
 
 export interface DenoPluginOptions {
+  /** Specify the configuration file.
+   *
+   * @example relative path
+   * - "./deno.json"
+   * - "deno.json"
+   *
+   * @example absolute path
+   * "/path/to/deno.json"
+   */
+  config?: string;
+
   /** Path to deno dir.
    *
    * @default DENO_DIR
@@ -124,11 +135,16 @@ export function denoPlugin(options?: DenoPluginOptions): Plugin {
   return {
     name: "deno",
     async setup(build) {
+      const denoDir = options?.denoDir;
+
+      if (options?.config) {
+        return denoConfigPlugin(options.config, { denoDir })
+          .setup(build);
+      }
+
       const cwd =
         (build.initialOptions.absWorkingDir || Deno.cwd()) as AbsolutePath; // This is guaranteed
-
       const configFile = await findDenoConfig(cwd);
-      const denoDir = options?.denoDir;
 
       if (configFile) {
         const { config, path } = configFile;
