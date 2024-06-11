@@ -66,10 +66,6 @@ describe("assertTsconfigRaw", () => {
       { compilerOptions: { paths: { "": [false] } } },
     ];
 
-    console.log(
-      assertTsconfigRaw({ compilerOptions: { paths: { "": [false] } } }),
-    );
-
     for (const input of table) {
       expect(() => assertTsconfigRaw(input)).toThrow();
     }
