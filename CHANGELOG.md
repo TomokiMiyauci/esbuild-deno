@@ -1,3 +1,10 @@
+# [1.0.0-beta.7](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.6...1.0.0-beta.7) (2024-06-12)
+
+
+### Features
+
+* update deps version ([b13463e](https://github.com/TomokiMiyauci/esbuild-deno/commit/b13463ed73cedf64ee18a698377a34f0c8ed2aba))
+
 # [1.0.0-beta.6](https://github.com/TomokiMiyauci/esbuild-deno/compare/1.0.0-beta.5...1.0.0-beta.6) (2024-06-11)
 
 
