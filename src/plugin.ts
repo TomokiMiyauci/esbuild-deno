@@ -5,7 +5,7 @@ import {
 import { type Plugin } from "esbuild";
 import {
   importMapPlugin,
-  type ImportMapPluginArgs,
+  type ImportMapResource,
 } from "@miyauci/esbuild-import-map";
 import {
   type AbsolutePath,
@@ -75,12 +75,12 @@ export function denoConfigPlugin(
           console.warn(message);
         }
 
-        const importMapPluginArgs = {
-          baseURL: resolvedImportMap.baseURL,
+        const importMapResource = {
+          url: resolvedImportMap.baseURL,
           importMap,
-        } satisfies ImportMapPluginArgs;
+        } satisfies ImportMapResource;
 
-        await importMapPlugin(importMapPluginArgs).setup(build);
+        await importMapPlugin(importMapResource).setup(build);
       }
 
       const configDir = dirname(absConfigPath);
