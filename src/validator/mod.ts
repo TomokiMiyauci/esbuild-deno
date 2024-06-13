@@ -2,6 +2,8 @@ export {
   and,
   array,
   boolean,
+  max,
+  min,
   object,
   or,
   partial,

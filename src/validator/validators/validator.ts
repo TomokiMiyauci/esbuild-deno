@@ -2,6 +2,7 @@ import { display, dotted } from "../utils.ts";
 import type {
   DynamicMessage,
   Expectation,
+  Inspection,
   Problem,
   Validator,
 } from "../types.ts";
@@ -159,8 +160,8 @@ export class RecordValidator<K extends string, V>
 export class IntersectionValidator<In, Via extends In, Out extends Via>
   extends BaseValidator<In, Out> {
   constructor(
-    public left: Validator<In, Via>,
-    public right: Validator<Via, Out>,
+    public left: Inspection<In, Via>,
+    public right: Inspection<Via, Out>,
   ) {
     super();
   }

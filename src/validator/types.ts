@@ -33,3 +33,7 @@ export interface Problem {
 
   by: Messenger;
 }
+
+export type Inspection<In, Out extends In = In> =
+  | Inspector<In>
+  | Validator<In, Out>;

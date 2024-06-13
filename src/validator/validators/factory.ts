@@ -1,4 +1,9 @@
-import type { Expectation, Validator } from "../types.ts";
+import type {
+  Expectation,
+  Inspection,
+  Inspector,
+  Validator,
+} from "../types.ts";
 import {
   ArrayValidator,
   EqualityValidator,
@@ -8,6 +13,7 @@ import {
   TypeValidator,
   UnionValidator,
 } from "./validator.ts";
+import { MaxInspector, MinInspector } from "./inspector.ts";
 
 export const string: Validator<unknown, string> & Expectation =
   new TypeValidator("string");
@@ -44,8 +50,8 @@ export function or<In, Out extends In>(
 }
 
 export function and<In, Out extends Via, Via extends In>(
-  left: Validator<In, Via>,
-  right: Validator<Via, Out>,
+  left: Inspection<In, Via>,
+  right: Inspection<Via, Out>,
 ): Validator<In, Out> & Expectation {
   return new IntersectionValidator(left, right);
 }
@@ -54,4 +60,16 @@ export function array<T>(
   validator?: Validator<unknown, T>,
 ): Validator<unknown, T[]> & Expectation {
   return new ArrayValidator(validator);
+}
+
+export function max(
+  expected: number,
+): Inspector<Iterable<unknown>> & Expectation {
+  return new MaxInspector(expected);
+}
+
+export function min(
+  expected: number,
+): Inspector<Iterable<unknown>> & Expectation {
+  return new MinInspector(expected);
 }
