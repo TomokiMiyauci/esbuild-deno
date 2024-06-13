@@ -4,8 +4,8 @@ export function assert<In, Out extends In>(
   input: In,
   validator: Validator<In, Out>,
 ): asserts input is Out {
-  for (const failure of validator.check(input)) {
-    const message = failure.by.message(failure);
+  for (const problem of validator.inspect(input)) {
+    const message = problem.by.message(problem);
     const error = new Error(message);
 
     throw captured(error);

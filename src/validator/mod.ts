@@ -10,4 +10,4 @@ export {
   value,
 } from "./validators/factory.ts";
 export { assert } from "./validation.ts";
-export type { ValidationFailure, Validator } from "./types.ts";
+export type { Problem, Validator } from "./types.ts";

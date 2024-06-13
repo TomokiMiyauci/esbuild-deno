@@ -2,13 +2,13 @@ import { display, dotted } from "../utils.ts";
 import type {
   DynamicMessage,
   Expectation,
-  ValidationFailure,
+  Problem,
   Validator,
 } from "../types.ts";
 
-function defaultMessage(failure: ValidationFailure): string {
-  const pathStr = dotted(...failure.instancePath);
-  const body = `should be ${failure.expected} but ${failure.actual}`;
+function defaultMessage(problem: Problem): string {
+  const pathStr = dotted(...problem.instancePath);
+  const body = `should be ${problem.expected} but ${problem.actual}`;
   const message = pathStr ? `'${pathStr}' ${body}` : body;
 
   return message;
@@ -17,7 +17,7 @@ function defaultMessage(failure: ValidationFailure): string {
 abstract class BaseValidator<In = unknown, Out extends In = In>
   implements Validator<In, Out>, Expectation {
   is(input: In): input is Out {
-    for (const _ of this.check(input)) {
+    for (const _ of this.inspect(input)) {
       return false;
     }
 
@@ -32,13 +32,13 @@ abstract class BaseValidator<In = unknown, Out extends In = In>
     return this;
   }
 
-  message(failure: ValidationFailure): string {
+  message(problem: Problem): string {
     if (typeof this.#message === "string") return this.#message;
 
-    return this.#message(failure);
+    return this.#message(problem);
   }
 
-  abstract check(input: In): Iterable<ValidationFailure>;
+  abstract inspect(input: In): Iterable<Problem>;
 
   abstract toString(): string;
 }
@@ -64,7 +64,7 @@ export class TypeValidator<T extends TypeName>
     super();
   }
 
-  *check(input: unknown): Iterable<ValidationFailure> {
+  *inspect(input: unknown): Iterable<Problem> {
     const type = input === null ? "null" : typeof input;
 
     if (type !== this.type) {
@@ -87,7 +87,7 @@ export class EqualityValidator<const T> extends BaseValidator<unknown, T> {
     super();
   }
 
-  *check(input: unknown): Iterable<ValidationFailure> {
+  *inspect(input: unknown): Iterable<Problem> {
     if (input !== this.value) {
       yield {
         instancePath: [],
@@ -108,7 +108,7 @@ export class ArrayValidator<T> extends BaseValidator<unknown, T[]> {
     super();
   }
 
-  *check(input: unknown): Iterable<ValidationFailure> {
+  *inspect(input: unknown): Iterable<Problem> {
     if (!Array.isArray(input)) {
       return yield {
         instancePath: [],
@@ -120,9 +120,9 @@ export class ArrayValidator<T> extends BaseValidator<unknown, T[]> {
 
     if (this.validator) {
       for (const [index, value] of input.entries()) {
-        const failures = this.validator.check(value);
+        const problems = this.validator.inspect(value);
 
-        for (const failure of failures) yield shiftPath(index, failure);
+        for (const problem of problems) yield shiftPath(index, problem);
       }
     }
   }
@@ -143,11 +143,11 @@ export class RecordValidator<K extends string, V>
     super();
   }
 
-  *check(input: object): Iterable<ValidationFailure> {
+  *inspect(input: object): Iterable<Problem> {
     for (const [k, v] of Object.entries(input)) {
-      for (const result of this.key.check(k)) yield shiftPath(k, result);
+      for (const result of this.key.inspect(k)) yield shiftPath(k, result);
 
-      for (const result of this.value.check(v)) yield shiftPath(k, result);
+      for (const result of this.value.inspect(v)) yield shiftPath(k, result);
     }
   }
 
@@ -165,9 +165,9 @@ export class IntersectionValidator<In, Via extends In, Out extends Via>
     super();
   }
 
-  *check(input: In): Iterable<ValidationFailure> {
-    yield* this.left.check(input);
-    yield* this.right.check(input as Via);
+  *inspect(input: In): Iterable<Problem> {
+    yield* this.left.inspect(input);
+    yield* this.right.inspect(input as Via);
   }
 
   toString(): string {
@@ -180,7 +180,7 @@ export class UnionValidator<In, Out extends In> extends BaseValidator<In, Out> {
     super();
   }
 
-  *check(input: In): Iterable<ValidationFailure> {
+  *inspect(input: In): Iterable<Problem> {
     for (const validator of this.validators) {
       if (validator.is(input)) return;
     }
@@ -218,15 +218,15 @@ export class PartialValidator<T extends object>
     super();
   }
 
-  *check(input: object): Iterable<ValidationFailure> {
+  *inspect(input: object): Iterable<Problem> {
     for (const key in this.record) {
       if (!Reflect.has(input, key)) continue;
 
       const value = Reflect.get(input, key);
       const validator = this.record[key];
-      const failures = validator.check(value);
+      const problems = validator.inspect(value);
 
-      for (const failure of failures) yield shiftPath(key, failure);
+      for (const problem of problems) yield shiftPath(key, problem);
     }
   }
 
@@ -237,10 +237,10 @@ export class PartialValidator<T extends object>
 
 function shiftPath(
   path: PropertyKey,
-  failure: ValidationFailure,
-): ValidationFailure {
+  problem: Problem,
+): Problem {
   return {
-    ...failure,
-    instancePath: [path, ...failure.instancePath],
+    ...problem,
+    instancePath: [path, ...problem.instancePath],
   };
 }

@@ -1,22 +1,10 @@
-export interface ValidationFailure {
-  /** The path to a part of the instance. */
-  instancePath: PropertyKey[];
-
-  actual: unknown;
-
-  expected: unknown;
-  by: Messenger;
-}
-
 export interface Messenger extends Serialize {
   message: DynamicMessage;
 }
 
 export interface Validator<In = unknown, Out extends In = In>
-  extends Serialize {
+  extends Inspector<In> {
   is: (input: In) => input is Out;
-
-  check: (input: In) => Iterable<ValidationFailure>;
 }
 
 export interface Expectation {
@@ -24,17 +12,24 @@ export interface Expectation {
 }
 
 export interface DynamicMessage {
-  (failure: ValidationFailure): string;
+  (problem: Problem): string;
 }
 
 export interface Serialize {
   toString(): string;
 }
 
-export type InferIn<T extends Validator> = T extends
-  Validator<infer In, infer _> ? In
-  : never;
+export interface Inspector<In = unknown> extends Serialize {
+  inspect: (input: In) => Iterable<Problem>;
+}
 
-export type InferOut<T extends Validator> = T extends
-  Validator<infer _, infer Out> ? Out
-  : never;
+export interface Problem {
+  /** The path to a part of the instance. */
+  instancePath: PropertyKey[];
+
+  actual: unknown;
+
+  expected: unknown;
+
+  by: Messenger;
+}
