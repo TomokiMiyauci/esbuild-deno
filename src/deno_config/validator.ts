@@ -4,6 +4,7 @@ import {
   array,
   assert,
   boolean,
+  iter,
   object,
   or,
   partial,
@@ -22,7 +23,7 @@ const jsx = or(
   value("precompile"),
 );
 
-const strArray = array(string);
+const strArray = and<unknown, string[], Iterable<unknown>>(array, iter(string));
 
 const compilerOptions = partial({
   allowJs: boolean,

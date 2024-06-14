@@ -5,6 +5,7 @@ import {
   array,
   assert,
   boolean,
+  iter,
   object,
   or,
   partial,
@@ -82,6 +83,8 @@ const jsx = or(
   value("react-jsxdev"),
 );
 
+const strArray = and<unknown, string[], Iterable<unknown>>(array, iter(string));
+
 const compilerOptions = partial<NonNullable<TsconfigRaw["compilerOptions"]>>({
   alwaysStrict: boolean,
   baseUrl: string,
@@ -91,7 +94,7 @@ const compilerOptions = partial<NonNullable<TsconfigRaw["compilerOptions"]>>({
   jsxFactory: string,
   jsxFragmentFactory: string,
   jsxImportSource: string,
-  paths: and(object, record(string, array(string))),
+  paths: and(object, record(string, strArray)),
   preserveValueImports: boolean,
   strict: boolean,
   target: string,

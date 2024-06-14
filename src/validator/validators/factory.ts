@@ -8,6 +8,7 @@ import {
   ArrayValidator,
   EqualityValidator,
   IntersectionValidator,
+  IterableValidator,
   PartialValidator,
   RecordValidator,
   TypeValidator,
@@ -49,18 +50,15 @@ export function or<In, Out extends In>(
   return new UnionValidator(validators);
 }
 
-export function and<In, Out extends Via, Via extends In>(
+export function and<In, Out extends Via, Via extends In = In>(
   left: Inspection<In, Via>,
   right: Inspection<Via, Out>,
 ): Validator<In, Out> & Expectation {
   return new IntersectionValidator(left, right);
 }
 
-export function array<T>(
-  validator?: Validator<unknown, T>,
-): Validator<unknown, T[]> & Expectation {
-  return new ArrayValidator(validator);
-}
+export const array: Validator<unknown, unknown[]> & Expectation =
+  new ArrayValidator();
 
 export function max(
   expected: number,
@@ -72,4 +70,10 @@ export function min(
   expected: number,
 ): Inspector<Iterable<unknown>> & Expectation {
   return new MinInspector(expected);
+}
+
+export function iter<In, Out extends In>(
+  inspector: Inspection<In, Out>,
+): Validator<Iterable<In>, Iterable<Out>> & Expectation {
+  return new IterableValidator(inspector);
 }

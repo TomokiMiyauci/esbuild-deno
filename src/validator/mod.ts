@@ -2,6 +2,7 @@ export {
   and,
   array,
   boolean,
+  iter,
   max,
   min,
   object,

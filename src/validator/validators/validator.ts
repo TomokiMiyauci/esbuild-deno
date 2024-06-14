@@ -104,8 +104,8 @@ export class EqualityValidator<const T> extends BaseValidator<unknown, T> {
   }
 }
 
-export class ArrayValidator<T> extends BaseValidator<unknown, T[]> {
-  constructor(public validator?: Validator<unknown, T>) {
+export class ArrayValidator extends BaseValidator<unknown, unknown[]> {
+  constructor() {
     super();
   }
 
@@ -118,20 +118,10 @@ export class ArrayValidator<T> extends BaseValidator<unknown, T[]> {
         by: this,
       };
     }
-
-    if (this.validator) {
-      for (const [index, value] of input.entries()) {
-        const problems = this.validator.inspect(value);
-
-        for (const problem of problems) yield shiftPath(index, problem);
-      }
-    }
   }
 
   toString(): string {
-    const repr = this.validator ? this.validator.toString() : "unknown";
-
-    return `${repr}[]`;
+    return `unknown[]`;
   }
 }
 
@@ -234,6 +224,32 @@ export class PartialValidator<T extends object>
   toString(): string {
     return `Partial<record>`;
   }
+}
+
+export class IterableValidator<In, Out extends In = In>
+  extends BaseValidator<Iterable<In>, Iterable<Out>> {
+  constructor(public inspector: Inspection<In, Out>) {
+    super();
+  }
+
+  *inspect(input: Iterable<In>): Iterable<Problem> {
+    for (const [index, iter] of enumerate(input)) {
+      for (const problem of this.inspector.inspect(iter)) {
+        yield shiftPath(index, problem);
+      }
+    }
+  }
+
+  toString(): string {
+    return `Iterable<${this.inspector.toString()}>`;
+  }
+}
+
+export function* enumerate<T>(
+  iterable: Iterable<T>,
+  start: number = 0,
+): Iterable<[index: number, item: T]> {
+  for (const item of iterable) yield [start++, item];
 }
 
 function shiftPath(
