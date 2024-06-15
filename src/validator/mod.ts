@@ -10,6 +10,7 @@ export {
   partial,
   record,
   string,
+  tuple,
   value,
 } from "./validators/factory.ts";
 export { assert } from "./validation.ts";

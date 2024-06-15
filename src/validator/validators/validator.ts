@@ -245,6 +245,33 @@ export class IterableValidator<In, Out extends In = In>
   }
 }
 
+export class TupleValidator<In extends unknown[], Out extends In>
+  extends BaseValidator<In, Out> {
+  constructor(
+    public inspectors:
+      & { [k in keyof In]: Inspection<In[k], Out[k]> }
+      & { [k in keyof Out]: Inspection<Out[k]> },
+  ) {
+    super();
+  }
+
+  *inspect(input: In) {
+    for (const [index, inspector] of this.inspectors.entries()) {
+      const value = input[index];
+
+      for (const problem of inspector.inspect(value)) {
+        yield shiftPath(index, problem);
+      }
+    }
+  }
+
+  toString(): string {
+    const inner = this.inspectors.join(", ");
+
+    return `[${inner}]`;
+  }
+}
+
 export function* enumerate<T>(
   iterable: Iterable<T>,
   start: number = 0,

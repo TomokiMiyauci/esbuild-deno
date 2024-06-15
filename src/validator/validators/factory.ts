@@ -11,6 +11,7 @@ import {
   IterableValidator,
   PartialValidator,
   RecordValidator,
+  TupleValidator,
   TypeValidator,
   UnionValidator,
 } from "./validator.ts";
@@ -76,4 +77,15 @@ export function iter<In, Out extends In>(
   inspector: Inspection<In, Out>,
 ): Validator<Iterable<In>, Iterable<Out>> & Expectation {
   return new IterableValidator(inspector);
+}
+
+export function tuple<
+  In extends unknown[],
+  Out extends In,
+>(
+  ...inspectors:
+    & { [k in keyof In]: Inspection<In[k], Out[k]> }
+    & { [k in keyof Out]: Inspection<Out[k]> }
+): Validator<In, Out> {
+  return new TupleValidator<In, Out>(inspectors);
 }
