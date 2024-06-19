@@ -1,4 +1,4 @@
-import type { Expectation, Inspection, Validator } from "../types.ts";
+import type { Expectation, Validator } from "../types.ts";
 import {
   ArrayValidator,
   EqualityValidator,
@@ -48,8 +48,8 @@ export function or<In, Out extends In>(
 }
 
 export function and<In, Out extends Via, Via extends In = In>(
-  left: Inspection<In, Via>,
-  right: Inspection<Via, Out>,
+  left: Validator<In, Via>,
+  right: Validator<Via, Out>,
 ): Validator<In, Out> & Expectation {
   return new IntersectionValidator(left, right);
 }
@@ -70,18 +70,18 @@ export function min(
 }
 
 export function iter<In, Out extends In>(
-  inspector: Inspection<In, Out>,
+  validator: Validator<In, Out>,
 ): Validator<Iterable<In>, Iterable<Out>> & Expectation {
-  return new IterableValidator(inspector);
+  return new IterableValidator(validator);
 }
 
 export function tuple<
   In extends unknown[],
   Out extends In,
 >(
-  ...inspectors:
-    & { [k in keyof In]: Inspection<In[k], Out[k]> }
-    & { [k in keyof Out]: Inspection<Out[k]> }
+  ...validators:
+    & { [k in keyof In]: Validator<In[k], Out[k]> }
+    & { [k in keyof Out]: Validator<Out[k]> }
 ): Validator<In, Out> {
-  return new TupleValidator<In, Out>(inspectors);
+  return new TupleValidator<In, Out>(validators);
 }

@@ -1,10 +1,10 @@
-import type { Inspector, Validator } from "./types.ts";
+import type { Validator } from "./types.ts";
 
 export function assert<In, Out extends In = In>(
   input: In,
-  inspector: Inspector<In> | Validator<In, Out>,
+  validator: Validator<In, Out>,
 ): asserts input is Out {
-  for (const problem of inspector.inspect(input)) {
+  for (const problem of validator.inspect(input)) {
     const message = problem.by.message(problem);
     const error = new Error(message);
 

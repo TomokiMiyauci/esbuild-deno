@@ -2,7 +2,6 @@ import { display, dotted } from "../utils.ts";
 import type {
   DynamicMessage,
   Expectation,
-  Inspection,
   Problem,
   Validator,
 } from "../types.ts";
@@ -150,8 +149,8 @@ export class RecordValidator<K extends string, V>
 export class IntersectionValidator<In, Via extends In, Out extends Via>
   extends BaseValidator<In, Out> {
   constructor(
-    public left: Inspection<In, Via>,
-    public right: Inspection<Via, Out>,
+    public left: Validator<In, Via>,
+    public right: Validator<Via, Out>,
   ) {
     super();
   }
@@ -228,45 +227,45 @@ export class PartialValidator<T extends object>
 
 export class IterableValidator<In, Out extends In = In>
   extends BaseValidator<Iterable<In>, Iterable<Out>> {
-  constructor(public inspector: Inspection<In, Out>) {
+  constructor(public validator: Validator<In, Out>) {
     super();
   }
 
   *inspect(input: Iterable<In>): Iterable<Problem> {
     for (const [index, iter] of enumerate(input)) {
-      for (const problem of this.inspector.inspect(iter)) {
+      for (const problem of this.validator.inspect(iter)) {
         yield shiftPath(index, problem);
       }
     }
   }
 
   toString(): string {
-    return `Iterable<${this.inspector.toString()}>`;
+    return `Iterable<${this.validator.toString()}>`;
   }
 }
 
 export class TupleValidator<In extends unknown[], Out extends In>
   extends BaseValidator<In, Out> {
   constructor(
-    public inspectors:
-      & { [k in keyof In]: Inspection<In[k], Out[k]> }
-      & { [k in keyof Out]: Inspection<Out[k]> },
+    public validators:
+      & { [k in keyof In]: Validator<In[k], Out[k]> }
+      & { [k in keyof Out]: Validator<Out[k]> },
   ) {
     super();
   }
 
   *inspect(input: In) {
-    for (const [index, inspector] of this.inspectors.entries()) {
+    for (const [index, validator] of this.validators.entries()) {
       const value = input[index];
 
-      for (const problem of inspector.inspect(value)) {
+      for (const problem of validator.inspect(value)) {
         yield shiftPath(index, problem);
       }
     }
   }
 
   toString(): string {
-    const inner = this.inspectors.join(", ");
+    const inner = this.validators.join(", ");
 
     return `[${inner}]`;
   }

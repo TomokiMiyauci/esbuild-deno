@@ -23,7 +23,10 @@ const jsx = or(
   value("precompile"),
 );
 
-const strArray = and<unknown, string[], Iterable<unknown>>(array, iter(string));
+const strArray = and(
+  array,
+  iter(string) as any as Validator<unknown[], string[]>,
+);
 
 const compilerOptions = partial({
   allowJs: boolean,

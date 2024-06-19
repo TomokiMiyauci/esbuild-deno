@@ -11,6 +11,7 @@ import {
   partial,
   record,
   string,
+  type Validator,
   value,
 } from "@miyauci/validator";
 import { Field, Message } from "./constants.ts";
@@ -83,7 +84,10 @@ const jsx = or(
   value("react-jsxdev"),
 );
 
-const strArray = and<unknown, string[], Iterable<unknown>>(array, iter(string));
+const strArray = and(
+  array,
+  iter(string) as any as Validator<unknown[], string[]>,
+);
 
 const compilerOptions = partial<NonNullable<TsconfigRaw["compilerOptions"]>>({
   alwaysStrict: boolean,
