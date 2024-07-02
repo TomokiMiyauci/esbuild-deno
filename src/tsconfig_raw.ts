@@ -86,6 +86,7 @@ const jsx = or(
 
 const strArray = and(
   array,
+  // deno-lint-ignore no-explicit-any
   iter(string) as any as Validator<unknown[], string[]>,
 );
 
